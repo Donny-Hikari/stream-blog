@@ -1,0 +1,28 @@
+.header {
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	background-color: #5e9ed9;
+	height: 42px;
+	width: 100%;
+}
+ul.navbar {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+    list-style-type: none;
+}
+ul.navbar li {
+    float: left;
+    padding: 0 10px;
+}
+ul.navbar li:hover {
+	background-color: #1e80da;
+}
+a.navhome {
+	line-height: 42px;
+	font-size: 23px;
+	text-decoration: none;
+	color: #ffffff;
+}
