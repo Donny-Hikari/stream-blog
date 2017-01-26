@@ -1,99 +1,282 @@
 var DEBUG_MODE = true;
 
-function processBlogXML(bloginfo, blogXML) {
-  if (DEBUG_MODE) console.log(blogXML);
+var blogroot = "./blogs/";
+var mainList = blogroot + "list/years.json";
 
-	var title = (bloginfo.title) ? (bloginfo.title) : blogXML.getElementsByTagName("title")[0].innerHTML;
-  if (title) {
-  	document.title = title + " - Donny's Blogs";
-    var blogtitle = document.getElementById("blogTitleContainer");
-    blogtitle.innerHTML = title;
-  }
+const HomeStateEnum = {
+  UNLOADED: 0,
+  LOADED: 1,
+  LOADING: 2
+};
+var homepageState = HomeStateEnum.UNLOADED; // 0: unload, 1: loaded, 2: loading
 
-  var body = blogXML.getElementsByTagName("body");
-  var blogContainer = document.getElementById("blogContainer");
-  blogContainer.innerHTML = body[0].innerHTML;
-
-  blogContainer.style.display = "block";
+function getFolder(fullpath) {
+    var i = fullpath.lastIndexOf('/');
+    if (i <= 0)
+      return "";
+    else
+      return fullpath.substring(0, i + 1);
 }
 
-function processBlogHTML(bloginfo, rawHTML) {
+const PageStateEnum = {
+  HOME: 0,
+  BLOGPOST: 1
+};
+function switchPage(page) {
+  switch (page)
+  {
+  case PageStateEnum.HOME:
+    $("#postContainer").hide();
+    $("#presentList").show();
+    break;
+  case PageStateEnum.BLOGPOST:
+    $("#presentList").hide();
+    $("#postContainer").show();
+    break;
+  }
+}
+
+function processPostXML(postinfo, postXML) {
+  if (DEBUG_MODE) console.log(postXML);
+
+  // Setting title
+	var title = (postinfo.title) ? (postinfo.title) : postXML.getElementsByTagName("title")[0].innerHTML;
+  if (title) {
+  	document.title = title + " - Donny's Blogs";
+    var postTitle = document.getElementById("postTitleContainer");
+    postTitle.innerHTML = title;
+  }
+
+  // Assign context
+  var body = postXML.getElementsByTagName("body");
+  var postContainer = document.getElementById("postContainer");
+  postContainer.innerHTML = body[0].innerHTML;
+
+  switchPage(PageStateEnum.BLOGPOST);
+  // postContainer.style.display = "block";
+}
+
+function checkCSSState(CSSLinks, callback) {
+  for (var i = 0; i < CSSLinks.length; ++i) {
+    if (CSSLinks[i].rel == "stylesheet") { // Is css file
+      console.log(CSSLinks[i].sheet);
+      if (CSSLinks[i].sheet == null) return false;
+    }
+  }
+  callback();
+  return true;
+}
+
+function processpostHTML(postinfo, rawHTML) {
   // Redirect address
-  rawHTML = rawHTML.replace(/=\".\//g, "=\"" + bloginfo.folder);
+  rawHTML = rawHTML.replace(/=\".\//g, "=\"" + postinfo.folder);
   if (DEBUG_MODE) console.log(rawHTML);
 
   // Assign context
-  var blogContainer = document.getElementById("blogContainer");
-  blogContainer.innerHTML = rawHTML;
+  var postContainer = document.getElementById("postContainer");
+  postContainer.innerHTML = rawHTML;
 
   // Setting title
-  var title = (bloginfo.title) ? (bloginfo.title) : document.getElementById("blogtitle").innerHTML;
+  var title = (postinfo.title) ? (postinfo.title) : document.getElementById("postTitle").innerHTML;
   if (title) {
     document.title = title + " - Donny's Blogs";
-    var blogtitle = document.getElementById("blogTitleContainer");
-    blogtitle.innerHTML = title;
+    var postTitle = document.getElementById("postTitleContainer");
+    postTitle.innerHTML = title;
   }
 
-  blogContainer.style.display = "block";
+  // Loading css files, prevent display before css loaded
+  var links = postContainer.getElementsByTagName("link");
+  var cssStateMonitor = setInterval(function () {
+    checkCSSState(links, function () {
+      // Loading finished
+      clearInterval(cssStateMonitor);
+      switchPage(PageStateEnum.BLOGPOST);
+      // postContainer.style.display = "block";
+    });
+  }, 20);
 }
 
-function loadBlogMain(bloginfo) {
-  bloginfo.url = bloginfo.folder + bloginfo.main;
-  if (DEBUG_MODE) console.log("Loading %s...", bloginfo.url);
-  if (DEBUG_MODE) console.log(bloginfo);
+function loadpostMain(postinfo) {
+  postinfo.url = postinfo.folder + postinfo.main;
+  postinfo.folder = getFolder(postinfo.url);
+  if (DEBUG_MODE) console.log("Loading %s...", postinfo.url);
+  if (DEBUG_MODE) console.log(postinfo);
 
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      if (bloginfo.bHTML)
-        processBlogHTML(bloginfo, this.responseText);
+      if (postinfo.bHTML)
+        processpostHTML(postinfo, this.responseText);
       else
-        processBlogXML(bloginfo, this.responseXML);
+        processPostXML(postinfo, this.responseXML);
     }
   };
-  xhttp.open("GET", bloginfo.url, true);
+  xhttp.open("GET", postinfo.url, true);
   xhttp.send();
 }
 
-function loadBlog(folder) {
+function parsePostInfo(rawJSONText, postfolder) {
+  var postinfo = JSON.parse(rawJSONText);
+  if (!postinfo) return null;
+
+  // initial folder
+  postinfo.folder = postfolder;
+
+  // type
+  if (postinfo.type && /XML/i.test(postinfo.type))
+    postinfo.bHTML = false;
+  else
+    postinfo.bHTML = true;
+
+  // main
+  if (!postinfo.main)
+    postinfo.main = (postinfo.bHTML) ? "index.html" : "index.xml";
+
+  return postinfo;
+}
+
+function loadpost(folder) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function () {
     if (this.readyState != 4) return;
 
-    var bloginfo;
+    var postinfo = {};
     switch (this.status)
     {
-      case 200: // Has "bloginfo.json" file
-        if (!this.responseText) { // Regard as HTML by default
-          bloginfo.folder = folder;
-          bloginfo.bHTML = true;
-          bloginfo.main = "index.html";
-          loadBlogMain(bloginfo);
-        } else { // Loading "bloginfo.json"
-          bloginfo = JSON.parse(this.responseText);
-          bloginfo.folder = folder;
-
-          // type
-          if (bloginfo.type && /XML/i.test(bloginfo.type))
-            bloginfo.bHTML = false;
-          else
-            bloginfo.bHTML = true;
-
-          // main
-          if (!bloginfo.main)
-            bloginfo.main = (bloginfo.bHTML) ? "index.html" : "index.xml";
-
-          loadBlogMain(bloginfo);
-        }
-        break;
-      case 404: // Is xml type
-        bloginfo.folder = folder;
-        bloginfo.bHTML = false;
-        bloginfo.main = "index.xml";
-        loadBlogMain(bloginfo);
-        break;
+    case 200: // Has "postinfo.json" file
+      if (!this.responseText) { // Regard as HTML by default
+        postinfo.folder = folder;
+        postinfo.bHTML = true;
+        postinfo.main = "index.html";
+        loadpostMain(postinfo);
+      } else { // Loading "postinfo.json"
+        postinfo = parsePostInfo(this.responseText, folder);
+        loadpostMain(postinfo);
+      }
+      break;
+    case 404: // Is xml type
+      postinfo.folder = folder;
+      postinfo.bHTML = false;
+      postinfo.main = "index.xml";
+      loadpostMain(postinfo);
+      break;
     }
   };
-  xhttp.open("GET", folder + "bloginfo.json", true);
+  xhttp.open("GET", folder + "postinfo.json", true);
+  xhttp.send();
+}
+
+/*
+function onLoadingpost() {
+  console.log("onLoadingpost");
+}
+*/
+
+function loadPostPreview($postPreviewer) {
+  var infourl = $postPreviewer.infoFile;
+  if (DEBUG_MODE) console.log("Loading post preview \"%s\" ...", infourl);
+  $postPreviewer.appear_off($postPreviewer.onappear_callback);
+
+  var postFolder = getFolder(infourl);
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function () {
+    if (this.readyState == 4 && this.status == 200) {
+        var postinfo = parsePostInfo(this.responseText, postFolder);
+
+        $postPreviewer.find(".infomask h1").text(postinfo.title);
+        $postPreviewer.click(function (){ loadpostMain(postinfo); });
+        $postPreviewer.css("cursor", "pointer");
+        $postPreviewer.css("background-image", "url(\"" + postFolder + postinfo.poster + "\")");
+    }
+  };
+  xhttp.open("GET", infourl, true);
+  xhttp.send();
+}
+
+// Load list of posts of a current year
+function loadList($yearContainer) {
+  var listurl = $yearContainer.postslist;
+  if (DEBUG_MODE) console.log("Loading list \"%s\" ...", listurl);
+  $yearContainer.appear_off($yearContainer.onappear_callback);
+
+  var listContainer = $yearContainer.find(".listcontainer");
+  var listFolder = getFolder(listurl);
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      var postslist = JSON.parse(this.responseText);
+      var $postPreviewer = $("<article>", { class: "postpreviewer" })
+        .append( $("<section>") );
+      var $infomask = $("<div>", { class: "infomask" })
+        .append( $("<h1>") );
+      $postPreviewer.append($infomask);
+
+      postslist && postslist.forEach(function (curList) {
+        var $curPreviewer = $postPreviewer.clone();
+
+        // Regist appear callback
+        $curPreviewer.infoFile = listFolder + curList;
+        $curPreviewer.onappear_callback = function () { loadPostPreview($curPreviewer); };
+        $curPreviewer.appear($curPreviewer.onappear_callback);
+
+        listContainer.append($curPreviewer);
+
+        if ($curPreviewer.is(':appeared'))
+          $curPreviewer.trigger('appear', [$curPreviewer]);
+      });
+    }
+  };
+  xhttp.open("GET", listurl, true);
+  xhttp.send();
+}
+
+function loadHomepage() {
+  switch (homepageState)
+  {
+  case HomeStateEnum.LOADED:
+    switchPage(PageStateEnum.HOME);
+  case HomeStateEnum.LOADING:
+    return;
+  case HomeStateEnum.UNLOADED:
+    homepageState = HomeStateEnum.LOADING;
+    break;
+  }
+
+  var listurl = mainList;
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      homepageState = HomeStateEnum.LOADED;
+
+      var postslist = JSON.parse(this.responseText);
+      var $yearContainer = $("<div>")
+        .append( $("<div>", { class: "yearbanner" }).append($("<div>")) )
+        .append( $("<div>", { class: "listcontainer" }) );
+
+      postslist && postslist.forEach(function (curList) {
+        var yearTitle = "YEAR " + curList.split('/').pop().split('.')[0];
+        var $curContainer = $yearContainer.clone();
+
+        // Assign title
+        $curContainer.find(".yearbanner").append($("<p>").append(
+          $("<i>").text(yearTitle)
+        ));
+
+        // Regist appear callback
+        $curContainer.postslist = getFolder(listurl) + curList;
+        $curContainer.onappear_callback = function () { loadList($curContainer); };
+        $curContainer.appear($curContainer.onappear_callback);
+
+        $("#presentList").append($curContainer);
+
+        if ($curContainer.is(':appeared'))
+          $curContainer.trigger('appear', [$curContainer]);
+      });
+    }
+  };
+  xhttp.open("GET", listurl, true);
   xhttp.send();
 }

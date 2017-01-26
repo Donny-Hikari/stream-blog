@@ -8,55 +8,115 @@
     box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.3), 0 4px 15px 0 rgba(0, 0, 0, 0.10);
     z-index: 1000;
 }
-ul.navbar {
-	display: inline;
-	margin: 0;
-	padding: 0;
-    list-style-type: none;
+.navbar {
+	display: flex;
+	/*margin: 0;*/
+	/*padding: 0;*/
+    /*list-style-type: none;*/
 }
-ul.navbar li {
+.navbar div {
     padding: 0 10px;
 }
-ul.navbar li:hover {
+.navbar div.buttons {
+	white-space: nowrap;
+}
+.navbar div.buttons:hover {
 	background-color: #1e80da;
 }
-ul.navbar a {
+.navbar a {
 	text-decoration: none;
 	line-height: 42px;
 	font-size: 23px;
 	color: #ffffff;
 }
-ul.navbar li.right {
-    float: right;
-}
-ul.navbar li.left {
-    float: left;
-}
-div.title {
-	position: fixed;
-	top: 0px;
-	width: 100%;
+.navbar div.title {
 	margin: auto;
 	text-align: center;
+	overflow: hidden;
     pointer-events: none;
 }
-span.title {
+.navbar span.title {
 	color: #ffffff;
 	font-size: 23px;
 	line-height: 42px;
+	white-space: nowrap;
+	position: relative;
+}
+.mainbody {
+	
 }
 .container {
-	width: 100%;
+	width: 80%;
 	margin: auto;
 	margin-top: 42px;
 }
+.yearbanner {
+	background-color: #5e9ed9;
+	width: 100%;
+	margin: 30px 0 0;
+    display: inline-flex;
+}
+.yearbanner div:first-child {
+    display: inline;
+    width: 20px;
+    background-color: #31ff2b;
+}
+.yearbanner p {
+	font-size: 23px;
+	color: white;
+	margin: 20px 40px;
+}
+.listcontainer {
+	width: 60%;
+	margin: 0px auto;
+}
+.postpreviewer {
+	height: 400px;
+	margin: 26px 0;
+	background-color: #ebebeb;
+    position: relative;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+.postpreviewer .infomask {
+    position: absolute;
+    bottom: 0;
+    display: block;
+    width: 100%;
+	padding-top: 20px;
+    background-color: black;
+	background:
+		linear-gradient(transparent,rgba(0,0,0,0.1) 5%,rgba(0,0,0,0.4) 20%,rgba(0,0,0,0.7) 50%,rgba(0,0,0,0.9));
+}
+.postpreviewer .infomask h1 {
+	color: white;
+	font-size: 36px;
+	margin: 36px 30px;
+}
+/*On Big Screen*/
 @media screen and (min-width: 1000px) {
-	.container {
-		width: 80%;
+	.navbar div.buttons a.more::after {
+		content: "More";
 	}
 }
+/*On Small Screen*/
 @media screen and (min-width: 0px) and (max-width: 1000px) {
 	.header {
 		zoom: 2.0;
+	}
+	.navbar span.title {
+		visibility: hidden;
+	}
+	.container {
+		width: 98%;
+		margin-top: 84px;
+	}
+	.yearbanner p {
+		font-size: 28px;
+		margin: 16px 40px;
+	}
+	.listcontainer {
+		width: 100%;
 	}
 }

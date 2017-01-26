@@ -2,32 +2,42 @@
 <html>
 <head>
 	<title>Donny's Blogs</title>
+	<link rel="icon" href="./favicon.ico" type="image/x-icon">
 	<link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<link rel="stylesheet" type="text/css" href="./main.css">
+	<link rel="stylesheet" type="text/css" href="./pace.css">
+	<script type="text/javascript" src="./pace.min.js" data-pace-options='{ "restartOnRequestAfter": true }'></script>
+	<script type="text/javascript" src="./jquery.min.js"></script>
+	<script type="text/javascript" src="./jquery.appear.promoted.js"></script>
 	<script type="text/javascript" src="./blogsloader.js"></script>
-	<script type="text/javascript">
-		loadBlog("./Blogs/2016/10/07/");
-	</script>
 </head>
 <body>
-	<div class="header">
-		<ul class="navbar">
-		<li class="left">
-			<a href="./framework.html">
+	<div class="header navbar">
+		<div class="buttons">
+			<a class="more" href="./framework.html">
+			<span>☰</span>
+			</a>
+		</div>
+		<div class="title">
+			<span id="postTitleContainer" class="title"></span>
+		</div>
+		<div class="buttons">
+			<a href="javascript:loadHomepage()">
 			<span>Donny's Blogs</span>
 			</a>
-		</li>
-		<li class="right">
-			<a href="./framework.html">
-			<span>More</span>
-			</a>
-		</li>
-		</ul>
-		<div class="title">
-		<span id="blogTitleContainer" class="title"></span>
 		</div>
 	</div>
-	<div id="blogContainer" class="container" style="display:none;"></div>
+	<div class="maincontainer">
+		<div id="presentList" class="container"></div>
+		<div id="postContainer" class="container" style="display:none;"></div>
+	</div>
+
+	<script type="text/javascript">
+		loadHomepage();
+		// document.getElementById("blogContainer").addEventListener('readystatechange', onLoadingBlog);
+		// loadBlog("./blogs/2016/10/07/");
+		// setTimeout(function () {loadBlog("./Blogs/2016/10/07/")}, 2000);
+	</script>
 </body>
 </html>
