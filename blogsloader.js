@@ -1,3 +1,14 @@
+/*
+* Blogs Loader
+*
+* Copyright (c) 2017 Donny Hikari
+* licensed under MIT license.
+*
+* https://github.com/Donny-Hikari/stream-blog
+*
+* Version: 0.3.2
+*/
+
 var DEBUG_MODE = true;
 
 var blogroot = "./blogs/";
