@@ -33,16 +33,21 @@ const PageStateEnum = {
   HOME: 0,
   BLOGPOST: 1
 };
+
+var homepageScrollTop = 0;
 function switchPage(page) {
   switch (page)
   {
   case PageStateEnum.HOME:
     $("#postContainer").hide();
     $("#presentList").show();
+    $(window).scrollTop(homepageScrollTop);
     break;
   case PageStateEnum.BLOGPOST:
+    homepageScrollTop = $(window).scrollTop();
     $("#presentList").hide();
     $("#postContainer").show();
+    $(window).scrollTop(0);
     break;
   }
 }
@@ -217,14 +222,18 @@ function loadList($yearContainer) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      var postslist = JSON.parse(this.responseText);
+      var postslist = JSON.parse(this.responseText); // all posts in this year
+      if (!postslist) return;
+
       var $postPreviewer = $("<article>", { class: "postpreviewer" })
         .append( $("<section>") );
       var $infomask = $("<div>", { class: "infomask" })
         .append( $("<h1>") );
       $postPreviewer.append($infomask);
 
-      postslist && postslist.forEach(function (curList) {
+      $yearContainer.find(".postscount").text(postslist.length)
+        .append( $("<span>").css("padding-left", "15px").text("POSTS") );
+      postslist.forEach(function (curList) {
         var $curPreviewer = $postPreviewer.clone();
 
         // Regist appear callback
@@ -272,9 +281,9 @@ function loadHomepage() {
         var $curContainer = $yearContainer.clone();
 
         // Assign title
-        $curContainer.find(".yearbanner").append($("<p>").append(
-          $("<i>").text(yearTitle)
-        ));
+        $curContainer.find(".yearbanner")
+          .append( $("<p>").append($("<i>").text(yearTitle)) )
+          .append( $("<p>", { class: "postscount" }) );
 
         // Regist appear callback
         $curContainer.postslist = getFolder(listurl) + curList;
