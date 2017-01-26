@@ -7,19 +7,27 @@
 	<link rel="stylesheet" type="text/css" href="./main.css">
 	<script type="text/javascript" src="./blogsloader.js"></script>
 	<script type="text/javascript">
-		loadBlog("demo.xml");
+		loadBlog("./Blogs/2016/10/07/");
 	</script>
 </head>
 <body>
 	<div class="header">
 		<ul class="navbar">
-		<li>
-		<a class="navhome navbar" href="./framework.html">
-		<span>Donny's Blogs</span>
-		</a>
+		<li class="left">
+			<a href="./framework.html">
+			<span>Donny's Blogs</span>
+			</a>
+		</li>
+		<li class="right">
+			<a href="./framework.html">
+			<span>More</span>
+			</a>
 		</li>
 		</ul>
+		<div class="title">
+		<span id="blogTitleContainer" class="title"></span>
+		</div>
 	</div>
-	<div id="maincontainer"></div>
+	<div id="blogContainer" class="container" style="display:none;"></div>
 </body>
 </html>
