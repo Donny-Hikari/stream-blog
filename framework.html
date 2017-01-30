@@ -14,30 +14,34 @@
 </head>
 <body>
 	<div class="header navbar">
-		<div class="buttons">
-			<a class="more" href="./framework.html">
-			<span>☰</span>
-			</a>
+		<div class="buttons" onclick="onClickMoreBtn()">
+			<span class="more">☰</span>
 		</div>
 		<div class="title">
 			<span id="postTitleContainer" class="title"></span>
 		</div>
-		<div class="buttons">
-			<a href="javascript:loadHomepage()">
+		<div id="homebtn" class="buttons" onclick="onClickHomeBtn()">
 			<span>Donny's Blogs</span>
-			</a>
 		</div>
 	</div>
 	<div class="maincontainer">
-		<div id="presentList" class="container"></div>
-		<div id="postContainer" class="container" style="display:none;"></div>
+		<div class="homecontainer">
+			<div id="presentList" class="presentcontainer"></div>
+			<div class="listnav"></div>
+		</div>
+		<div id="postContainer" class="articlecontainer" style="display:none;"></div>
 	</div>
 
 	<script type="text/javascript">
+		function onClickHomeBtn () {
+			loadHomepage();
+		}
+
+		function onClickMoreBtn () {
+
+		}
+
 		loadHomepage();
-		// document.getElementById("blogContainer").addEventListener('readystatechange', onLoadingBlog);
-		// loadBlog("./blogs/2016/10/07/");
-		// setTimeout(function () {loadBlog("./Blogs/2016/10/07/")}, 2000);
 	</script>
 </body>
 </html>

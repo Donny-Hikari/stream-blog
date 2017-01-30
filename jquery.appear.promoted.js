@@ -51,8 +51,8 @@
     var i = selectors.indexOf(selector);
     if (i <= -1) return;
 
-    selectors = selectors.splice(i, 1);
-    $prior_appeared = $prior_appeared.splice(i, 1);
+    selectors.splice(i, 1);
+    $prior_appeared.splice(i, 1);
   }
 
   // "appeared" custom filter
