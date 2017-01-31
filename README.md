@@ -6,8 +6,10 @@ It might have some limitation, but useful in case we post articles from local ra
 # The Loading Process
 In this section, the working process of function 'loadHomepage()' will be revealed.
 First of all, the loader search for list of posts of years in "./blogs/list/years.json", which should contain a json array describing where each year's list of posts is. Notice that the links should be relative to "./blogs/list/".
->This is an example.
->./blogs/list/years.json
+
+> This is an example.
+>> ./blogs/list/years.json
+
 ```json
 [
 	"../2017/2017.json",
@@ -17,8 +19,10 @@ First of all, the loader search for list of posts of years in "./blogs/list/year
 Link "../2017/2017.json" will be redirected to "./blogs/list/../2017/2017.json". Similarly link "../2016/2016.json" will be redirected to "./blogs/list/../2016/2016.json". Notice that the link could point to anywhere with any file name so long as the link is relative to "./blogs/list/".
 
 Next, the loader search for the link described in 'years.json'. Take "../2017/2017.json" for example. The loader will search for "./blogs/list/../2017/2017.json". Once found, the loader begin to load the links in it. It's similar to the process before. A json array contianing the list of posts of the year is expected. And again, the links should be relative to "./blogs/list/../2017/".
->This is an example.
->./blogs/2016/2016.json
+
+> This is an example.
+>> ./blogs/2016/2016.json
+
 ```json
 [
 	"./10/08/postinfo.json",
@@ -31,21 +35,22 @@ Finally, the loader comes to the last stage: loading the 'postinfo.json' and dis
 
 # Posts Loading
 The section talks about how the function 'loadpost(folder)' works.
-1.	If there is 'postinfo.json' under the folder, blogsLoader will read the info in the file.
-	If not, the blogsLoader search for 'index.xml'.
+
+1.	* If there is 'postinfo.json' under the folder, blogsLoader will read the info in the file.
+	* If not, the blogsLoader search for 'index.xml'.
 2.	Vaild info in 'postinfo.json':
 	1. type:
-		- HTML: default
-		- XML
+		* HTML: default
+		* XML
 	2. main:
-		Main file of the article, which blogsLoader load into blogContainer.
+		* Main file of the article, which blogsLoader load into blogContainer.
 	3. title:
-		If "title" is not provided, blogsLoader will search for an id "blogtitle" in the article. Once found, it will be set as title.
+		* If "title" is not provided, blogsLoader will search for an id "blogtitle" in the article. Once found, it will be set as title.
 	4. author
 	5. date:
-		Date the article create.
+		* Date the article create.
 	6. poster:
-		Poster of the article. Display on list.
+		* Poster of the article. Display on list.
 
 # About
 Author: [Donny Hikari](https://github.com/Donny-Hikari "GitHub")
