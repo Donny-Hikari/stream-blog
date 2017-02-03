@@ -1,15 +1,16 @@
 /*
-* Blogs Loader
+* Stream Blogs Loader
 *
 * Copyright (c) 2017 Donny Hikari
 * licensed under MIT license.
 *
 * https://github.com/Donny-Hikari/stream-blog
 *
-* Version: 0.3.2
+* Version: 0.3.3
 */
 
 var DEBUG_MODE = true;
+var DEBUG_VERBOSE = DEBUG_MODE && true;
 
 var blogroot = "./blogs/";
 var mainList = blogroot + "list/years.json";
@@ -68,7 +69,7 @@ function switchPage(page) {
 }
 
 function processPostXML(postinfo, postXML) {
-  if (DEBUG_MODE) console.log(postXML);
+  if (DEBUG_VERBOSE) console.log(postXML);
 
   // Setting title
 	var title = (postinfo.title) ? (postinfo.title) : postXML.getElementsByTagName("title")[0].innerHTML;
@@ -86,10 +87,11 @@ function processPostXML(postinfo, postXML) {
 function checkCSSState(CSSLinks, callback) {
   for (var i = 0; i < CSSLinks.length; ++i) {
     if (CSSLinks[i].rel == "stylesheet") { // Is css file
-      console.log(CSSLinks[i].sheet);
+      if (DEBUG_VERBOSE) console.log(CSSLinks[i].sheet);
       if (CSSLinks[i].sheet == null) return false;
     }
   }
+  if (DEBUG_MODE) console.log("CSSs Loaded.");
   callback();
   return true;
 }
@@ -97,7 +99,7 @@ function checkCSSState(CSSLinks, callback) {
 function processpostHTML(postinfo, rawHTML) {
   // Redirect address
   rawHTML = rawHTML.replace(/=\".\//g, "=\"" + postinfo.folder);
-  if (DEBUG_MODE) console.log(rawHTML);
+  if (DEBUG_VERBOSE) console.log(rawHTML);
 
   // Assign context
   var postContainer = document.getElementById("postContainer");

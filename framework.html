@@ -5,24 +5,63 @@
 	<link rel="icon" href="./favicon.ico" type="image/x-icon">
 	<link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<link rel="stylesheet" type="text/css" href="./main.css">
-	<link rel="stylesheet" type="text/css" href="./pace.css">
-	<script type="text/javascript" src="./pace.min.js" data-pace-options='{ "restartOnRequestAfter": true }'></script>
-	<script type="text/javascript" src="./jquery.min.js"></script>
-	<script type="text/javascript" src="./jquery.appear.promoted.js"></script>
-	<script type="text/javascript" src="./blogsloader.js"></script>
+	<link rel="stylesheet" type="text/css" href="./libs/main.css">
+	<link rel="stylesheet" type="text/css" href="./libs/pace.css">
+	<script type="text/javascript" src="./libs/pace.min.js" data-pace-options='{ "restartOnRequestAfter": true }'></script>
+	<script type="text/javascript" src="./libs/jquery.min.js"></script>
+	<script type="text/javascript" src="./libs/jquery.appear.promoted.js"></script>
+	<script type="text/javascript" src="./libs/athena.js"></script>
+	<script type="text/javascript" src="./libs/blogsloader.js"></script>
 </head>
 <body>
 	<div class="header navbar">
-		<div class="buttons" onclick="onClickMoreBtn()">
-			<span class="more">☰</span>
+		<div class="buttons transit-bkcolor" onclick="onClickMenuBtn()">
+			<span class="more"></span>
 		</div>
 		<div class="title">
 			<span id="postTitleContainer" class="title"></span>
 		</div>
-		<div id="homebtn" class="buttons" onclick="onClickHomeBtn()">
+		<div id="homebtn" class="buttons transit-bkcolor" onclick="onClickHomeBtn()">
 			<span>Donny's Blogs</span>
 		</div>
+	</div>
+	<div id="menuPanel" class="menubar" style="display:none;">
+		<div class="menuclosebtn transit-bkcolor" onclick="onCloseMenu()">
+		</div>
+		<div class="middlepanel">
+			<div id="myprofile" class="profileinfo" onclick="onChangeAvatarStyle()" lang="centerized">
+				<img class="prof-avatar" src="./users/avatar.small.png" href="Donny Hikari"></img>
+				<span class="prof-user">Donny Hikari</span>
+			</div>
+			<div class="navlist">
+				<div class="links transit-bkcolor" onclick="onCloseMenu(), onClickBlogsHome()">
+					<span>Donny's Blogs</span>
+				</div>
+				<div class="links transit-bkcolor">
+					<span>About</span>
+				</div>
+			</div>
+		</div>
+		<div class="infopanel">
+			<div class="contactlist">
+				<a class="social-btn github-btn" href="https://github.com/Donny-Hikari" target="_blank">
+				</a>
+				<a class="social-btn twitter-btn" href="https://twitter.com/HikariDonny" target="_blank">
+				</a>
+			</div>
+			<div class="copyright">
+				<p>
+					<span>Powered by Stream Blogs</span>
+					<a class="github-repo" href="https://github.com/Donny-Hikari/stream-blog" target="_blank">
+						<span class="github-svg"></span>
+						<span>Star</span>
+					</a>
+				</p>
+				<p>Copyright (c) 2017 Donny Hikari</p>
+			</div>
+		</div>
+	</div>
+	<div id="menuUnderMask" class="undermask" style="display:none;" onclick="onCloseMenu()">
 	</div>
 	<div class="maincontainer">
 		<div class="homecontainer">
@@ -34,11 +73,12 @@
 
 	<script type="text/javascript">
 		function onClickHomeBtn () {
-			loadHomepage();
+		  loadHomepage();
 		}
 
-		function onClickMoreBtn () {
-
+		function onClickBlogsHome() {
+		  loadHomepage();
+		  $(window).scrollTop(0);
 		}
 
 		loadHomepage();
