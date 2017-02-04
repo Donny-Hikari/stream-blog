@@ -1,0 +1,97 @@
+/*
+* main.css
+* By Donny Hikari
+* 
+* v2017.02.04
+*/
+.mainbody {
+	padding: 60px 15%;
+	position: relative;
+	background-color: white;
+}
+.inscribedText {
+	margin-top: 120px;
+	text-align: right;
+	font-size: 21px;
+	line-height: 1.0;
+}
+.prof-detail {
+	display: flex;
+}
+.userdetail {
+	margin: 0 20px;
+}
+.userdetail .infolist {
+	padding: 0 20px;
+}
+.prof-avatar-detail {
+	width: 256px;
+    box-shadow: 0 0 10px 2px black;
+    border-radius: 18px;
+}
+.prof-username-detail {
+	margin: 0 0 10px 0;
+	font-size: 45px;
+    color: #466bdf;
+    text-shadow: 0 0px 3px #000000;
+}
+.userdetail .infolist ul {
+	margin: 10px 0;
+	padding: 0 5px;
+}
+.userdetail .infolist ul li {
+	margin: 12px 0;
+    line-height: 1.4;
+    list-style: none;
+	font-size: 20px;
+    color: #3c3c3c;
+}
+.userdetail .infolist ul li:before {
+    display: inline-block;
+    position: relative;
+    max-width: 0;
+    max-height: 0;
+    left: -20px;
+    top: 3px;
+    color: #439800;
+    font-size: 34px;
+    content: '\2022';
+}
+/*On Small Screen*/
+@media screen and (min-width: 0px) and (max-width: 1000px) {
+	.mainbody {
+		padding: 60px 5%;
+	}
+	.inscribedText {
+		margin-top: 200px;
+		font-size: 30px;
+	}
+	.prof-detail {
+		display: block;
+		text-align: center;
+	}
+	.prof-avatar-detail {
+	    padding: 5px;
+		width: 280px;
+	    border: 2px solid #42b5ff;
+	    border-radius: 50%;
+	}
+	.prof-username-detail {
+		margin: 20px 0 110px;
+		font-size: 80px;
+	}
+	.userdetail .infolist {
+		padding: 0 0 0 36px;
+		text-align: left;		
+	}
+	.userdetail .infolist ul li {
+		margin: 20px 0;
+    	line-height: 1.6;
+		font-size: 24px;
+	    color: #1f1f1f;
+	}
+	.userdetail .infolist ul li:before {
+    	left: -36px;
+    	font-size: 60px;
+	}
+}

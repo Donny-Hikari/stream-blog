@@ -37,7 +37,7 @@
 				<div class="links transit-bkcolor" onclick="onCloseMenu(), onClickBlogsHome()">
 					<span>Donny's Blogs</span>
 				</div>
-				<div class="links transit-bkcolor">
+				<div class="links transit-bkcolor" onclick="onCloseMenu(), onClickAboutme()">
 					<span>About</span>
 				</div>
 			</div>
@@ -70,18 +70,5 @@
 		</div>
 		<div id="postContainer" class="articlecontainer" style="display:none;"></div>
 	</div>
-
-	<script type="text/javascript">
-		function onClickHomeBtn () {
-		  loadHomepage();
-		}
-
-		function onClickBlogsHome() {
-		  loadHomepage();
-		  $(window).scrollTop(0);
-		}
-
-		loadHomepage();
-	</script>
 </body>
 </html>

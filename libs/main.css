@@ -106,9 +106,9 @@
 }
 .prof-user {
 	color: white;
-	font-size: 24px;
 	transition: all 1s ease;
 
+	font-size: 24px;
 	display: inline;
 	position: absolute;
 	top: 50%;
@@ -305,16 +305,17 @@
     	cursor: pointer;
 	}
 	.menubar .profileinfo:lang(centerized) {
-		margin-bottom: 40px;
+		margin-bottom: 46px;
 		text-align: center;
 	}
 	.prof-avatar:lang(centerized) {
-		width: 80px;
+		width: 118px;
 	}
 	.prof-user:lang(centerized) {
+		font-size: 28px;
 		display: block;
 	    margin: 0;
-	    margin-top: 10px;
+	    margin-top: 18px;
 	    position: relative;
 	    bottom: 0;
 	    height: auto;

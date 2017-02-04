@@ -6,14 +6,15 @@
 *
 * https://github.com/Donny-Hikari/stream-blog
 *
-* Version: 0.3.3
+* Version: 0.4.6
 */
 
 var DEBUG_MODE = true;
-var DEBUG_VERBOSE = DEBUG_MODE && true;
+var DEBUG_VERBOSE = DEBUG_MODE && false;
 
 var blogroot = "./blogs/";
 var mainList = blogroot + "list/years.json";
+var aboutmefile = "./about/aboutme.json";
 
 const HomeStateEnum = {
   UNLOADED: 0,
@@ -23,11 +24,15 @@ const HomeStateEnum = {
 var homepageState = HomeStateEnum.UNLOADED; // 0: unload, 1: loaded, 2: loading
 
 function getFolder(fullpath) {
-    var i = fullpath.lastIndexOf('/');
-    if (i <= 0)
-      return "";
-    else
-      return fullpath.substring(0, i + 1);
+  var i = fullpath.lastIndexOf('/');
+  if (i <= 0)
+    return "";
+  else
+    return fullpath.substring(0, i + 1);
+}
+
+function getFilename(fullpath) {
+  return fullpath.split('/').pop();
 }
 
 const PageStateEnum = {
@@ -160,7 +165,8 @@ function parsePostInfo(rawJSONText, postfolder) {
   return postinfo;
 }
 
-function loadpost(folder) {
+function loadpost(folder, infofilename) {
+  if (!infofilename) infofilename = "postinfo.json";
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function () {
     if (this.readyState != 4) return;
@@ -187,7 +193,7 @@ function loadpost(folder) {
       break;
     }
   };
-  xhttp.open("GET", folder + "postinfo.json", true);
+  xhttp.open("GET", folder + infofilename, true);
   xhttp.send();
 }
 
@@ -197,6 +203,7 @@ function onLoadingpost() {
 }
 */
 
+// Load post preview for current post
 function loadPostPreview($postPreviewer) {
   var infourl = $postPreviewer.infoFile;
   if (DEBUG_MODE) console.log("Loading post preview \"%s\" ...", infourl);
@@ -212,7 +219,13 @@ function loadPostPreview($postPreviewer) {
 
         $postInfoMask.find(".posttitle").text(postinfo.title);
         $postInfoMask.find(".postdate").text(postinfo.date);
-        $postPreviewer.click(function (){ loadpostMain(postinfo); });
+        $postPreviewer.click(function (){
+          window.history.pushState(null, null,
+            window.location.pathname +
+            "?type=posts&year=" + $postPreviewer.urlparamdata.year +
+            "&article=" + $postPreviewer.urlparamdata.article);
+          loadpostMain(postinfo);
+        });
         $postPreviewer.css("cursor", "pointer");
         $postPreviewer.css("background-image", "url(\"" + postFolder + postinfo.poster + "\")");
     }
@@ -245,11 +258,15 @@ function loadList($yearContainer) {
 
       $yearContainer.find(".postscount").text(postslist.length)
         .append( $("<span>").css("padding-left", "15px").text("POSTS") );
-      postslist.forEach(function (curList) {
+      postslist.forEach(function (curList, curIndex) {
         var $curPreviewer = $postPreviewer.clone();
 
         // Regist appear callback
         $curPreviewer.infoFile = listFolder + curList;
+        $curPreviewer.urlparamdata = {
+          "year": $yearContainer.year_number,
+          "article": (postslist.length - curIndex) + 654415
+        };
         $curPreviewer.onappear_callback = function () { loadPostPreview($curPreviewer); };
         $curPreviewer.appear($curPreviewer.onappear_callback);
 
@@ -265,6 +282,8 @@ function loadList($yearContainer) {
 }
 
 function loadHomepage() {
+  if (DEBUG_MODE) console.log("Loading homepage...");
+
   switch (homepageState)
   {
   case HomeStateEnum.LOADED:
@@ -273,6 +292,7 @@ function loadHomepage() {
     return;
   case HomeStateEnum.UNLOADED:
     homepageState = HomeStateEnum.LOADING;
+    switchPage(PageStateEnum.HOME);
     break;
   }
 
@@ -283,13 +303,14 @@ function loadHomepage() {
     if (this.readyState == 4 && this.status == 200) {
       homepageState = HomeStateEnum.LOADED;
 
-      var postslist = JSON.parse(this.responseText);
+      var postslist_yearly = JSON.parse(this.responseText);
       var $yearContainer = $("<div>")
         .append( $("<div>", { class: "yearbanner" }).append($("<div>")) )
         .append( $("<div>", { class: "listcontainer" }) );
 
-      postslist && postslist.forEach(function (curList) {
-        var yearTitle = "YEAR " + curList.split('/').pop().split('.')[0];
+      postslist_yearly && postslist_yearly.forEach(function (curList) {
+        var year_number = getFilename(curList).split('.')[0];
+        var yearTitle = "YEAR " + year_number;
         var $curContainer = $yearContainer.clone();
 
         // Assign title
@@ -299,6 +320,7 @@ function loadHomepage() {
 
         // Regist appear callback
         $curContainer.postslist = getFolder(listurl) + curList;
+        $curContainer.year_number = year_number;
         $curContainer.onappear_callback = function () { loadList($curContainer); };
         $curContainer.appear($curContainer.onappear_callback);
 
@@ -311,4 +333,73 @@ function loadHomepage() {
   };
   xhttp.open("GET", listurl, true);
   xhttp.send();
+}
+
+function jumpToHome() {
+  window.history.pushState(null, null, window.location.pathname);
+  loadHomepage();
+}
+
+function analyzePostsParam(params, callback) {
+  var excep_wa = "Wrong Arguments.";
+
+  // parse param
+  var param_year = params[1].split('=');
+  var param_article = params[2].split('=');
+  if (param_year[0] != "year") throw excep_wa;
+  if (param_article[0] != "article") throw excep_wa;
+  param_year = param_year[1];
+  param_article = parseInt(param_article[1]) - 654415;
+  if (DEBUG_MODE) console.log("Loading article [" + param_article + "] in year " + param_year);
+
+  // Load mainList
+  var listurl_yearly = mainList;
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+
+      var postslist_yearly = JSON.parse(this.responseText);
+      if (!postslist_yearly) return callback();
+
+      var matchyear = postslist_yearly.filter(function (curList) {
+        var curyear = getFilename(curList).split('.')[0];
+        return (curyear == param_year);
+      });
+      if (!matchyear) return callback();
+      else matchyear = matchyear[0];
+
+      // Load yearlists that match param_year
+      var listurl_curyear = getFolder(listurl_yearly) + matchyear;
+      var yearfolder = getFolder(listurl_curyear);
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          var postslist = JSON.parse(this.responseText); // all posts in this year
+          if (!postslist) return callback();
+
+          var aimpost = postslist[postslist.length - param_article];
+          if (!aimpost) return callback();
+          var postfolder = getFolder(yearfolder + aimpost);
+          var infofilename = getFilename(aimpost);
+          
+          loadpost(postfolder, infofilename);
+        }
+      };
+      xhttp.open("GET", listurl_curyear, true);
+      xhttp.send();
+
+    }
+  };
+  xhttp.open("GET", listurl_yearly, true);
+  xhttp.send();
+
+}
+
+function loadAboutme(callback) {
+  loadpost(getFolder(aboutmefile), getFilename(aboutmefile));
+}
+
+function jumpToAboutme() {
+  window.history.pushState(null, null, window.location.pathname + "?type=aboutme");
+  loadAboutme(jumpToHome);
 }
