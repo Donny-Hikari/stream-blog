@@ -6,7 +6,7 @@
 *
 * https://github.com/Donny-Hikari/stream-blog
 *
-* Version: 0.4.6
+* Version: 0.4.9
 */
 
 var DEBUG_MODE = true;

@@ -50,6 +50,14 @@ function onClickAboutme() {
   jumpToAboutme();
 }
 
+function loadRmService() {
+  $.ajax({
+    url: "./libs/rmservice.js",
+    dataType: "script",
+    success: null
+  });
+}
+
 function analyzeUrlParam() {
 
   // fallback
@@ -94,5 +102,7 @@ $(window).ready(function (){
   $("#menuPanel").css("left", "-" + $("#menuPanel").width() + "px");
 
   analyzeUrlParam();
+  
+  loadRmService();
 
 });
