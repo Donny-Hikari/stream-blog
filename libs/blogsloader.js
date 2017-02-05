@@ -197,11 +197,31 @@ function loadpost(folder, infofilename) {
   xhttp.send();
 }
 
-/*
-function onLoadingpost() {
-  console.log("onLoadingpost");
+function isSpecialModeOn() {
+  var attachment = document.location.hash;
+  if (!attachment) return false;
+  var attachments = attachment.split('#');
+  if (attachments.length < 2) return;
+  var mode = attachments[1].split('=');
+  return (mode.length == 2 && mode[0] == "mode" && mode[1] == "secret");
 }
-*/
+
+function specialPost(postinfo) {
+  if (!postinfo || !postinfo.mode) return postinfo;
+  switch (postinfo.mode)
+  {
+  case "secret":
+    isSpecialModeOn() && (postinfo = postinfo.infofile) || (postinfo = null);
+    break;
+  default:
+    postinfo = postinfo.infofile;
+  }
+  return postinfo;
+}
+
+function pushHistoryState(params) {
+  window.history.pushState(null, null, window.location.pathname + params + document.location.hash);
+}
 
 // Load post preview for current post
 function loadPostPreview($postPreviewer) {
@@ -220,10 +240,10 @@ function loadPostPreview($postPreviewer) {
         $postInfoMask.find(".posttitle").text(postinfo.title);
         $postInfoMask.find(".postdate").text(postinfo.date);
         $postPreviewer.click(function (){
-          window.history.pushState(null, null,
-            window.location.pathname +
+          pushHistoryState(
             "?type=posts&year=" + $postPreviewer.urlparamdata.year +
-            "&article=" + $postPreviewer.urlparamdata.article);
+            "&article=" + $postPreviewer.urlparamdata.article
+          );
           loadpostMain(postinfo);
         });
         $postPreviewer.css("cursor", "pointer");
@@ -259,6 +279,9 @@ function loadList($yearContainer) {
       $yearContainer.find(".postscount").text(postslist.length)
         .append( $("<span>").css("padding-left", "15px").text("POSTS") );
       postslist.forEach(function (curList, curIndex) {
+        if (!(curList = specialPost(curList)))
+          return;
+
         var $curPreviewer = $postPreviewer.clone();
 
         // Regist appear callback
@@ -336,7 +359,7 @@ function loadHomepage() {
 }
 
 function jumpToHome() {
-  window.history.pushState(null, null, window.location.pathname);
+  pushHistoryState("");
   loadHomepage();
 }
 
@@ -379,6 +402,7 @@ function analyzePostsParam(params, callback) {
 
           var aimpost = postslist[postslist.length - param_article];
           if (!aimpost) return callback();
+          if (!(aimpost = specialPost(aimpost))) return callback();
           var postfolder = getFolder(yearfolder + aimpost);
           var infofilename = getFilename(aimpost);
           
@@ -400,6 +424,6 @@ function loadAboutme(callback) {
 }
 
 function jumpToAboutme() {
-  window.history.pushState(null, null, window.location.pathname + "?type=aboutme");
+  pushHistoryState("?type=aboutme");
   loadAboutme(jumpToHome);
 }
