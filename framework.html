@@ -5,9 +5,11 @@
 	<link rel="icon" href="./favicon.ico" type="image/x-icon">
 	<link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<link rel="stylesheet" type="text/css" href="./libs/main.css">
 	<link rel="stylesheet" type="text/css" href="./libs/pace.css">
 	<script type="text/javascript" src="./libs/pace.min.js" data-pace-options='{ "restartOnRequestAfter": true }'></script>
+	<link rel="stylesheet" type="text/css" href="./libs/main.css">
+	<link rel="stylesheet" type="text/css" href="./libs/post_container.css">
+	<link rel="stylesheet" type="text/css" href="./libs/menubar.css">
 	<script type="text/javascript" src="./libs/jquery.min.js"></script>
 	<script type="text/javascript" src="./libs/jquery.appear.promoted.js"></script>
 	<script type="text/javascript" src="./libs/athena.js"></script>
@@ -24,6 +26,13 @@
 		<div id="homebtn" class="buttons transit-bkcolor" onclick="onClickHomeBtn()">
 			<span>Donny's Blogs</span>
 		</div>
+	</div>
+	<div class="maincontainer">
+		<div class="homecontainer">
+			<div id="presentList" class="presentcontainer"></div>
+			<div class="listnav"></div>
+		</div>
+		<div id="postContainer" class="articlecontainer" style="display:none;"></div>
 	</div>
 	<div id="menuPanel" class="menubar" style="display:none;">
 		<div class="menuclosebtn transit-bkcolor" onclick="onCloseMenu()">
@@ -63,12 +72,9 @@
 	</div>
 	<div id="menuUnderMask" class="undermask" style="display:none;" onclick="onCloseMenu()">
 	</div>
-	<div class="maincontainer">
-		<div class="homecontainer">
-			<div id="presentList" class="presentcontainer"></div>
-			<div class="listnav"></div>
-		</div>
-		<div id="postContainer" class="articlecontainer" style="display:none;"></div>
+	<div class="operate_bar">
+		<div class="operate_bar_btn new_post_btn" style="visibility:hidden;" onclick="onCreateNewPost()">+</div>
+		<div class="operate_bar_btn scroll_to_top_btn" onclick="onScrollToTop()">&#x25B2;</div>
 	</div>
 </body>
 </html>

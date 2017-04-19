@@ -15,6 +15,7 @@ var DEBUG_VERBOSE = DEBUG_MODE && false;
 var blogroot = "./blogs/";
 var mainList = blogroot + "list/years.json";
 var aboutmefile = "./about/aboutme.json";
+var newpostfile = "./new_post/editpost.json";
 
 const HomeStateEnum = {
   UNLOADED: 0,
@@ -101,10 +102,47 @@ function checkCSSState(CSSLinks, callback) {
   return true;
 }
 
+/*
+Exclude elements that's in b from a
+*/
+function array_exclude(a, b, callback) {
+  var excludedArray = [];
+  a.forEach(function (i) {
+    var repeated = b.find(function (j) {
+      return callback(i, j);
+    });
+    if (repeated == undefined)
+      excludedArray.push(i);
+  });
+  return excludedArray;
+}
+
+function getLoadedMainScripts() {
+  // Get loaded scripts, excluding those brought by posts
+  return Array.from($("script")).filter(function (curScript) {
+    return undefined == Array.from($(curScript).parents()).find(function (curParent) {
+      return curParent.id == "postContainer";
+    });
+  });
+}
+
+function loadJavascriptFile(loadedscripts, newscripts, callback) {
+  var fleshscripts = [];
+  fleshscripts = array_exclude(newscripts, loadedscripts, function (cur_newscript, cur_oldscript) {
+    return (getFilename(cur_oldscript.src) == getFilename(cur_newscript.src));
+  });
+  fleshscripts.forEach(function (script) {
+    $.getScript(script.src);
+  });
+}
+
 function processpostHTML(postinfo, rawHTML) {
   // Redirect address
   rawHTML = rawHTML.replace(/=\".\//g, "=\"" + postinfo.folder);
   if (DEBUG_VERBOSE) console.log(rawHTML);
+
+  // Get loaded scripts
+  var loadedscripts = getLoadedMainScripts();
 
   // Assign context
   var postContainer = document.getElementById("postContainer");
@@ -124,6 +162,11 @@ function processpostHTML(postinfo, rawHTML) {
       // postContainer.style.display = "block";
     });
   }, 20);
+
+  // Loading javascript files.
+  var newscripts = Array.from(postContainer.getElementsByTagName("script"));
+  loadJavascriptFile(loadedscripts, newscripts);
+
 }
 
 function loadpostMain(postinfo) {
@@ -426,4 +469,13 @@ function loadAboutme(callback) {
 function jumpToAboutme() {
   pushHistoryState("?type=aboutme");
   loadAboutme(jumpToHome);
+}
+
+function loadNewPost(callback) {
+  loadpost(getFolder(newpostfile), getFilename(newpostfile));
+}
+
+function jumpToNewPost() {
+  pushHistoryState("?type=newpost");
+  loadNewPost(jumpToHome);
 }

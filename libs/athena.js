@@ -12,6 +12,18 @@
 var DEBUG_MODE = true;
 var DEBUG_VERBOSE = DEBUG_MODE && true;
 
+/* Trigger onpushstate when pushState */
+function listenPushState() {
+  var pushState = window.history.pushState;
+  window.history.pushState = function(state) {
+      var result = pushState.apply(window.history, arguments);
+      if (typeof window.onpushstate == "function") {
+          window.onpushstate({state: state});
+      }
+      return result;
+  }
+}
+
 function onClickMenuBtn () {
   $("#menuPanel").show();
   $("#menuUnderMask").show();
@@ -58,6 +70,34 @@ function loadRmService() {
   });
 }
 
+function onCreateNewPost() {
+  jumpToNewPost();
+}
+
+function onScrollToTop() {
+  $(window).scrollTop(0);
+}
+
+function getUrlParam() {
+  return document.location.search.split('&');
+}
+
+function getUrlParam_Type(params) {
+    if (params[0].substr(1, 4) != "type")
+      return null;
+    else
+      return params[0].split("=")[1];
+}
+
+function dynamicNewPostBtn() {
+  var hostname = document.location.hostname;
+  if (((hostname == "localhost") || (hostname == "192.168.139.1")) && (getUrlParam_Type(getUrlParam()) != "newpost")) {
+    $(".new_post_btn").css('visibility', 'visible');
+  } else {
+    $(".new_post_btn").css('visibility', 'hidden');
+  }
+}
+
 function analyzeUrlParam() {
 
   // fallback
@@ -70,10 +110,11 @@ function analyzeUrlParam() {
     if (!document.location.search || (document.location.search.length == 0))
       loadHomepage();
     else {
-      var params = document.location.search.split('&');
+      var params = getUrlParam();
       if (DEBUG_MODE) console.log(params);
-      if (params[0].substr(1, 4) == "type") {
-        var type = params[0].split("=")[1];
+
+      var type = getUrlParam_Type(params);
+      if (type) {
         if (DEBUG_MODE) console.log(type);
         switch (type)
         {
@@ -83,7 +124,11 @@ function analyzeUrlParam() {
         case "aboutme":
           loadAboutme(onfailfallback);
           break;
+        case "newpost":
+          loadNewPost();
+          break;
         }
+
       } // params[0].substr(1, 4) == "type"
     } // has search params
   } catch (e) {
@@ -94,12 +139,19 @@ function analyzeUrlParam() {
 
 $(window).ready(function (){
 
+  listenPushState();
   window.onpopstate = function (e) {
     analyzeUrlParam();
+    dynamicNewPostBtn();
+  };
+  window.onpushstate = function (e) {
+    dynamicNewPostBtn();
   };
 
   // Initialize for menuPanel
   $("#menuPanel").css("left", "-" + $("#menuPanel").width() + "px");
+
+  dynamicNewPostBtn();
 
   analyzeUrlParam();
   

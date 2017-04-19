@@ -1,0 +1,136 @@
+@font-face {
+	font-family: fontAwesome;
+	src: url(fontawesome-webfont.woff);
+}
+
+.maincontainer {
+	margin-top: 70px; /*42px + 28 px*/
+	margin-bottom: 36px;
+}
+.homecontainer {
+	width: 70%;
+	margin: auto;
+}
+.articlecontainer {
+	width: 76%;
+	margin: auto;
+}
+.presentcontainer {
+    width: 100%;
+}
+.yearbanner {
+	background-color: #5e9ed9;
+	width: 100%;
+	margin: 30px auto 0;
+    display: flex;
+    position: relative;
+    box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.3), 0 8px 30px 0px rgba(0, 0, 0, 0.10);
+}
+.yearbanner div:first-child {
+    display: inline;
+    width: 20px;
+    background-color: #31ff2b;
+}
+.yearbanner p {
+	font-size: 23px;
+	color: white;
+	margin: 20px 40px;
+}
+.yearbanner p.postscount {
+	position: absolute;
+	right: 0;
+}
+.listcontainer {
+	width: 64%;
+	margin: 0px auto;
+}
+.postpreviewer {
+	height: 400px;
+	margin: 26px 0;
+	background-color: #ebebeb;
+    position: relative;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    transition: box-shadow 0.2s;
+}
+.postpreviewer .infomask {
+    position: absolute;
+    bottom: 0;
+    display: block;
+    width: 100%;
+	padding-top: 20px;
+    background-color: black;
+	background:
+		linear-gradient(transparent,rgba(0,0,0,0.1) 5%,rgba(0,0,0,0.4) 20%,rgba(0,0,0,0.7) 50%,rgba(0,0,0,0.9));
+}
+.postpreviewer .infomask h1.posttitle {
+	color: white;
+	font-size: 36px;
+	margin: 18px 30px;
+}
+.postpreviewer .infomask p.postdate {
+	color: white;
+	font-size: 26px;
+	margin: 18px 30px;
+	white-space: nowrap;
+}
+
+/*On Big Screen*/
+@media screen and (min-width: 1000px) {
+	/*
+	.homecontainer {
+		display: flex;
+	}
+	.presentcontainer {
+		float: left;
+		width: 100%;
+	}
+	.listnav {
+		float: right;
+		width: 30%;
+		background-color: black;
+	}
+	*/
+	.postpreviewer:hover {
+	    box-shadow: 0 0 16px 6px rgba(0, 140, 186, 0.3), 0 0 30px 10px rgba(0, 140, 186, 0.1);
+	}
+}
+/*On Small Screen*/
+@media screen and (min-width: 0px) and (max-width: 1000px) {
+	.maincontainer {
+		margin-top: 120px; /*42px*2 + 36 px*/
+		margin-bottom: 36px;
+	}
+	.homecontainer {
+		width: 100%;
+	}
+	.articlecontainer {
+		width: 100%;
+	}
+	.listnav {
+		display: none;
+	}
+	.yearbanner {
+		margin: 0;
+		margin-top: 30px;
+	}
+	.yearbanner p {
+		font-size: 28px;
+		margin: 16px 40px;
+	}
+	.listcontainer {
+		width: 100%;
+		margin: 0;
+	}
+	.postpreviewer {
+		margin: 0;
+		height: 500px;
+	}
+	.postpreviewer .infomask h1.posttitle {
+		font-size: 42px;
+	}
+	.postpreviewer .infomask p.postdate {
+		font-size: 30px;
+	}
+}

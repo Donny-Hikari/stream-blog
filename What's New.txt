@@ -1,0 +1,5 @@
++ Add new post function
++ Add scroll to top function
++ Seperate styles of different modules into different css
++ Some beautify
++ Dynamic load javascripts in posts
