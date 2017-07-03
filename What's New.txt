@@ -1,5 +1,9 @@
+2017-04-19 Stream Blogs v0.5.8
++ Complete new post function
+
+2017-03-03 Stream Blogs v0.5.8
 + Add new post function
 + Add scroll to top function
 + Seperate styles of different modules into different css
 + Some beautify
-+ Dynamic load javascripts in posts
++ Dynamically load javascripts in posts
