@@ -9,18 +9,22 @@
 }
 .homecontainer {
 	width: 70%;
+	min-width: 900px;
 	margin: auto;
 }
 .articlecontainer {
 	width: 76%;
+	min-width: 900px;
 	margin: auto;
 }
 .presentcontainer {
     width: 100%;
 }
 .yearbanner {
-	background-color: #5e9ed9;
+    background: linear-gradient(to right, #5e9ed9, #88c7ff);
+	/* background-color: #5e9ed9; */
 	width: 100%;
+	min-width: 900px;
 	margin: 30px auto 0;
     display: flex;
     position: relative;
@@ -41,7 +45,8 @@
 	right: 0;
 }
 .listcontainer {
-	width: 64%;
+	width: 80%;
+	min-width: 700px;
 	margin: 0px auto;
 }
 .postpreviewer {
@@ -52,6 +57,7 @@
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
+    box-shadow: 0 0 2px black;
     transition: box-shadow 0.2s;
 }
 .postpreviewer .infomask {
@@ -112,6 +118,7 @@
 		display: none;
 	}
 	.yearbanner {
+		min-width: 100%;
 		margin: 0;
 		margin-top: 30px;
 	}

@@ -7,6 +7,13 @@
 	transition: background-color 0.3s ease;
 }
 
+body {
+	background: url("/stream/Rewrite.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+}
 .header {
 	position: fixed;
 	top: 0px;

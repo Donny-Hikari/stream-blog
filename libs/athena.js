@@ -42,10 +42,10 @@ function onCloseMenu() {
 }
 
 function onChangeAvatarStyle() {
-  if ($("#myprofile").attr("lang") == "centerized") {
-    $("#myprofile").attr("lang", "");
+  if ($("#myprofile").hasClass("profile-centerized")) {
+    $("#myprofile").removeClass("profile-centerized");
   } else {
-    $("#myprofile").attr("lang", "centerized");
+    $("#myprofile").addClass("profile-centerized");
   }
 }
 
@@ -60,6 +60,13 @@ function onClickBlogsHome() {
 
 function onClickAboutme() {
   jumpToAboutme();
+}
+
+function onClickACMHome() {
+  if (window.location.hash) window.location.hash+="&filter=acm";
+  else window.location.hash="#filter=acm";
+  window.location.reload();
+  $(window).scrollTop(0);
 }
 
 function loadRmService() {

@@ -240,12 +240,19 @@ function loadpost(folder, infofilename) {
   xhttp.send();
 }
 
-function isSpecialModeOn() {
+function getHahsParam() {
   var attachment = document.location.hash;
-  if (!attachment) return false;
+  if (!attachment) return null;
   var attachments = attachment.split('#');
-  if (attachments.length < 2) return;
-  var mode = attachments[1].split('=');
+  if (attachments.length < 2) return null;
+  attachments=attachments[1].split('&');
+  return attachments;
+}
+
+function isSpecialModeOn() {
+  var attachments = getHahsParam();
+  if (!attachments) return false;
+  var mode = attachments[0].split('=');
   return (mode.length == 2 && mode[0] == "mode" && mode[1] == "secret");
 }
 
@@ -254,12 +261,30 @@ function specialPost(postinfo) {
   switch (postinfo.mode)
   {
   case "secret":
-    isSpecialModeOn() && (postinfo = postinfo.infofile) || (postinfo = null);
+    //isSpecialModeOn() && (postinfo = postinfo.infofile) || (postinfo = null);
+    isSpecialModeOn() || (postinfo = null);
     break;
   default:
-    postinfo = postinfo.infofile;
+    //postinfo = postinfo.infofile;
   }
   return postinfo;
+}
+
+function getFilter() {
+  var attachments = getHahsParam();
+  if (!attachments) return null;
+  var mode;
+  if (attachments.length >= 2) mode = attachments[1].split('=');
+  else mode = attachments[0].split('=');
+  if (mode.length != 2 || mode[0] != "filter") return null;
+  return mode[1];
+}
+
+function filterPost(postinfo) {
+  var filter = getFilter();
+  if (!filter || postinfo.filter == filter)
+    return (postinfo.filter) ? (postinfo.infofile) : (postinfo);
+  return null;
 }
 
 function pushHistoryState(params) {
@@ -322,8 +347,8 @@ function loadList($yearContainer) {
       $yearContainer.find(".postscount").text(postslist.length)
         .append( $("<span>").css("padding-left", "15px").text("POSTS") );
       postslist.forEach(function (curList, curIndex) {
-        if (!(curList = specialPost(curList)))
-          return;
+        if (!(curList = specialPost(curList))) return;
+        if (!(curList = filterPost(curList))) return;
 
         var $curPreviewer = $postPreviewer.clone();
 
@@ -446,6 +471,7 @@ function analyzePostsParam(params, callback) {
           var aimpost = postslist[postslist.length - param_article];
           if (!aimpost) return callback();
           if (!(aimpost = specialPost(aimpost))) return callback();
+          if (!(aimpost = filterPost(aimpost))) return callback();
           var postfolder = getFolder(yearfolder + aimpost);
           var infofilename = getFilename(aimpost);
           
