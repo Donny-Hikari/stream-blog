@@ -12,18 +12,6 @@
 var DEBUG_MODE = true;
 var DEBUG_VERBOSE = DEBUG_MODE && false;
 
-var blogroot = "./blogs/";
-var mainList = blogroot + "list/years.json";
-var aboutmefile = "./about/aboutme.json";
-var newpostfile = "./new_post/editpost.json";
-
-const HomeStateEnum = {
-  UNLOADED: 0,
-  LOADED: 1,
-  LOADING: 2
-};
-var homepageState = HomeStateEnum.UNLOADED; // 0: unload, 1: loaded, 2: loading
-
 function getFolder(fullpath) {
   var i = fullpath.lastIndexOf('/');
   if (i <= 0)
@@ -34,44 +22,6 @@ function getFolder(fullpath) {
 
 function getFilename(fullpath) {
   return fullpath.split('/').pop();
-}
-
-const PageStateEnum = {
-  HOME: 0,
-  BLOGPOST: 1
-};
-
-function setPageTitle(title) {
-  var postTitle = $("#postTitleContainer");
-  if (!title || title == "") {
-    document.title = "Donny's Blogs";
-    postTitle.text("");
-  }
-  else {
-    document.title = title + " - Donny's Blogs";
-    postTitle.text(title);
-  }
-}
-
-var homepageScrollTop = 0;
-function switchPage(page) {
-  switch (page)
-  {
-  case PageStateEnum.HOME:
-    $("#postContainer").hide();
-    setPageTitle();
-    $('#homebtn').find('span').removeClass("home").text("Donny's Blogs");
-    $("#presentList").show();
-    $(window).scrollTop(homepageScrollTop);
-    break;
-  case PageStateEnum.BLOGPOST:
-    homepageScrollTop = $(window).scrollTop();
-    $("#presentList").hide();
-    $("#postContainer").show();
-    $(window).scrollTop(0);
-    $('#homebtn').find('span').addClass("home").text("Home");
-    break;
-  }
 }
 
 function processPostXML(postinfo, postXML) {
@@ -240,57 +190,6 @@ function loadpost(folder, infofilename) {
   xhttp.send();
 }
 
-function getHahsParam() {
-  var attachment = document.location.hash;
-  if (!attachment) return null;
-  var attachments = attachment.split('#');
-  if (attachments.length < 2) return null;
-  attachments=attachments[1].split('&');
-  return attachments;
-}
-
-function isSpecialModeOn() {
-  var attachments = getHahsParam();
-  if (!attachments) return false;
-  var mode = attachments[0].split('=');
-  return (mode.length == 2 && mode[0] == "mode" && mode[1] == "secret");
-}
-
-function specialPost(postinfo) {
-  if (!postinfo || !postinfo.mode) return postinfo;
-  switch (postinfo.mode)
-  {
-  case "secret":
-    //isSpecialModeOn() && (postinfo = postinfo.infofile) || (postinfo = null);
-    isSpecialModeOn() || (postinfo = null);
-    break;
-  default:
-    //postinfo = postinfo.infofile;
-  }
-  return postinfo;
-}
-
-function getFilter() {
-  var attachments = getHahsParam();
-  if (!attachments) return null;
-  var mode;
-  if (attachments.length >= 2) mode = attachments[1].split('=');
-  else mode = attachments[0].split('=');
-  if (mode.length != 2 || mode[0] != "filter") return null;
-  return mode[1];
-}
-
-function filterPost(postinfo) {
-  var filter = getFilter();
-  if (!filter || postinfo.filter == filter)
-    return (postinfo.filter) ? (postinfo.infofile) : (postinfo);
-  return null;
-}
-
-function pushHistoryState(params) {
-  window.history.pushState(null, null, window.location.pathname + params + document.location.hash);
-}
-
 // Load post preview for current post
 function loadPostPreview($postPreviewer) {
   var infourl = $postPreviewer.infoFile;
@@ -304,12 +203,16 @@ function loadPostPreview($postPreviewer) {
   xhttp.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
         var postinfo = parsePostInfo(this.responseText, postFolder);
+        var urlparam = getUrlParam();
 
         $postInfoMask.find(".posttitle").text(postinfo.title);
         $postInfoMask.find(".postdate").text(postinfo.date);
         $postPreviewer.click(function (){
           pushHistoryState(
-            "?type=posts&year=" + $postPreviewer.urlparamdata.year +
+            "?" +
+            "type=post" +
+            "&category=" + urlparam.category +
+            "&year=" + $postPreviewer.urlparamdata.year +
             "&article=" + $postPreviewer.urlparamdata.article
           );
           loadpostMain(postinfo);
@@ -320,6 +223,24 @@ function loadPostPreview($postPreviewer) {
   };
   xhttp.open("GET", infourl, true);
   xhttp.send();
+}
+
+function isSpecialModeOn() {
+  return getHashParam()["mode"] == "secret";
+}
+
+function getPostDescr(postinfo) {
+  if (!postinfo || (typeof postinfo === 'string')) return { infofile: postinfo };
+  switch (postinfo.mode)
+  {
+  case "secret":
+    //isSpecialModeOn() && (postinfo = postinfo.infofile) || (postinfo = null);
+    isSpecialModeOn() || (postinfo = undefined);
+    break;
+  default:
+    //postinfo = postinfo.infofile;
+  }
+  return postinfo;
 }
 
 // Load list of posts of a current year
@@ -346,14 +267,13 @@ function loadList($yearContainer) {
 
       $yearContainer.find(".postscount").text(postslist.length)
         .append( $("<span>").css("padding-left", "15px").text("POSTS") );
-      postslist.forEach(function (curList, curIndex) {
-        if (!(curList = specialPost(curList))) return;
-        if (!(curList = filterPost(curList))) return;
+      postslist.forEach(function (curPost, curIndex) {
+        if (!(curPost = getPostDescr(curPost))) return;
 
         var $curPreviewer = $postPreviewer.clone();
 
         // Regist appear callback
-        $curPreviewer.infoFile = listFolder + curList;
+        $curPreviewer.infoFile = listFolder + curPost.infofile;
         $curPreviewer.urlparamdata = {
           "year": $yearContainer.year_number,
           "article": (postslist.length - curIndex) + 654415
@@ -372,30 +292,16 @@ function loadList($yearContainer) {
   xhttp.send();
 }
 
-function loadHomepage() {
-  if (DEBUG_MODE) console.log("Loading homepage...");
-
-  switch (homepageState)
-  {
-  case HomeStateEnum.LOADED:
-    switchPage(PageStateEnum.HOME);
-  case HomeStateEnum.LOADING:
-    return;
-  case HomeStateEnum.UNLOADED:
-    homepageState = HomeStateEnum.LOADING;
-    switchPage(PageStateEnum.HOME);
-    break;
-  }
-
-  var listurl = mainList;
-
+function loadCategory(listurl) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      homepageState = HomeStateEnum.LOADED;
+      var $presentList = $("#presentList");
+      $presentList.empty();
+      //$presentList.remove(".yearcontainer");
 
       var postslist_yearly = JSON.parse(this.responseText);
-      var $yearContainer = $("<div>")
+      var $yearContainer = $("<div>", { class: "yearcontainer" })
         .append( $("<div>", { class: "yearbanner" }).append($("<div>")) )
         .append( $("<div>", { class: "listcontainer" }) );
 
@@ -415,7 +321,7 @@ function loadHomepage() {
         $curContainer.onappear_callback = function () { loadList($curContainer); };
         $curContainer.appear($curContainer.onappear_callback);
 
-        $("#presentList").append($curContainer);
+        $presentList.append($curContainer);
 
         if ($curContainer.is(':appeared'))
           $curContainer.trigger('appear', [$curContainer]);
@@ -426,25 +332,17 @@ function loadHomepage() {
   xhttp.send();
 }
 
-function jumpToHome() {
-  pushHistoryState("");
-  loadHomepage();
-}
-
 function analyzePostsParam(params, callback) {
   var excep_wa = "Wrong Arguments.";
 
   // parse param
-  var param_year = params[1].split('=');
-  var param_article = params[2].split('=');
-  if (param_year[0] != "year") throw excep_wa;
-  if (param_article[0] != "article") throw excep_wa;
-  param_year = param_year[1];
-  param_article = parseInt(param_article[1]) - 654415;
-  if (DEBUG_MODE) console.log("Loading article [" + param_article + "] in year " + param_year);
+  if (!params.year) throw excep_wa;
+  if (!params.article) throw excep_wa;
+  params.article = parseInt(params.article) - 654415;
+  if (DEBUG_MODE) console.log("Loading article [" + params.article + "] in year " + params.year);
 
   // Load mainList
-  var listurl_yearly = mainList;
+  var listurl_yearly = categories[params.category];
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
@@ -454,12 +352,12 @@ function analyzePostsParam(params, callback) {
 
       var matchyear = postslist_yearly.filter(function (curList) {
         var curyear = getFilename(curList).split('.')[0];
-        return (curyear == param_year);
+        return (curyear == params.year);
       });
       if (!matchyear) return callback();
       else matchyear = matchyear[0];
 
-      // Load yearlists that match param_year
+      // Load yearlists that match params.year
       var listurl_curyear = getFolder(listurl_yearly) + matchyear;
       var yearfolder = getFolder(listurl_curyear);
       var xhttp = new XMLHttpRequest();
@@ -468,12 +366,11 @@ function analyzePostsParam(params, callback) {
           var postslist = JSON.parse(this.responseText); // all posts in this year
           if (!postslist) return callback();
 
-          var aimpost = postslist[postslist.length - param_article];
+          var aimpost = postslist[postslist.length - params.article];
           if (!aimpost) return callback();
-          if (!(aimpost = specialPost(aimpost))) return callback();
-          if (!(aimpost = filterPost(aimpost))) return callback();
-          var postfolder = getFolder(yearfolder + aimpost);
-          var infofilename = getFilename(aimpost);
+          if (!(aimpost = getPostDescr(aimpost))) return callback();
+          var postfolder = getFolder(yearfolder + aimpost.infofile);
+          var infofilename = getFilename(aimpost.infofile);
           
           loadpost(postfolder, infofilename);
         }
@@ -486,22 +383,4 @@ function analyzePostsParam(params, callback) {
   xhttp.open("GET", listurl_yearly, true);
   xhttp.send();
 
-}
-
-function loadAboutme(callback) {
-  loadpost(getFolder(aboutmefile), getFilename(aboutmefile));
-}
-
-function jumpToAboutme() {
-  pushHistoryState("?type=aboutme");
-  loadAboutme(jumpToHome);
-}
-
-function loadNewPost(callback) {
-  loadpost(getFolder(newpostfile), getFilename(newpostfile));
-}
-
-function jumpToNewPost() {
-  pushHistoryState("?type=newpost");
-  loadNewPost(jumpToHome);
 }

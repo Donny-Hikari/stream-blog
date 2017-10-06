@@ -8,7 +8,7 @@
 }
 
 body {
-	background: url("/stream/Rewrite.jpg");
+	background: url("/stream/assets/img/Rewrite.jpg");
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
@@ -71,30 +71,37 @@ body {
 .operate_bar_btn {
     margin: 0 5px;
 	text-align: center;
-	width: 58px;
-	height: 58px;
-    line-height: 58px;
+	width: 52px;
+	height: 52px;
+	font-size: 42px;
+    line-height: 52px;
     font-weight: bold;
-    color: white;
+	color: white;
+	/* border-radius: 2px; */
     border-radius: 50%;
 	cursor: pointer;
     box-shadow: 0 0 2px 1px rgba(4, 58, 76, 0.32);
-    transition: box-shadow 0.4s ease-in-out;
+	transition: box-shadow 0.4s ease-in-out;
 }
 .operate_bar_btn:hover {
     box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.32);
 }
 .new_post_btn {
-    color: #ffffff;
-	font-size: 54px;
+    /* color: #ffffff; */
+    /* background: linear-gradient(180deg, #00bad2 0%, #a8deff 51%, #ccecff 75%, #f2fbff 90%); */
+	color: black;
+	background-color: #00bcd4;
     font-family: fantasy;
-    background: linear-gradient(180deg, #00bad2 0%, #a8deff 51%, #ccecff 75%, #f2fbff 90%);
 }
 .scroll_to_top_btn {
-    color: #6799cc;
-	font-size: 46px;
-    font-family: serif;
-    background: linear-gradient(180deg, #00d2c5 0%, #cef1ef 51%, #ffffff 75%);
+    /* color: #6799cc; */
+	/* background: linear-gradient(180deg, #00d2c5 0%, #cef1ef 51%, #ffffff 75%); */
+	color: black;
+	background-color: #00bcd4;
+    font-family: fontAwesome;
+}
+.scroll_to_top_btn::before {
+	content: "\f106"; /* &#x25B2; */
 }
 
 /*On Big Screen*/

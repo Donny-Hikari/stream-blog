@@ -24,6 +24,29 @@ function listenPushState() {
   }
 }
 
+function getUrlParam() {
+  var params = { category: "Articles" };
+  if (!document.location.search) return params;
+  document.location.search.split('?').pop().split('&').forEach((val)=>{
+    var param = val.split("=");
+    if (param && param.length == 2)
+      params[param[0]] = param[1];
+  });
+  return params;
+}
+
+function getHashParam() {
+  var attachments = {};
+  if (!document.location.hash) return attachments;
+  document.location.hash.split('#').pop().split('&').forEach((val)=>{
+    var param = val.split("=");
+    if (param && param.length == 2)
+    attachments[param[0]] = param[1];
+  });
+  return attachments;
+}
+
+
 function onClickMenuBtn () {
   $("#menuPanel").show();
   $("#menuUnderMask").show();
@@ -63,9 +86,7 @@ function onClickAboutme() {
 }
 
 function onClickACMHome() {
-  if (window.location.hash) window.location.hash+="&filter=acm";
-  else window.location.hash="#filter=acm";
-  window.location.reload();
+  jumpToCategory("ACM");
   $(window).scrollTop(0);
 }
 
@@ -85,20 +106,10 @@ function onScrollToTop() {
   $(window).scrollTop(0);
 }
 
-function getUrlParam() {
-  return document.location.search.split('&');
-}
-
-function getUrlParam_Type(params) {
-    if (params[0].substr(1, 4) != "type")
-      return null;
-    else
-      return params[0].split("=")[1];
-}
-
 function dynamicNewPostBtn() {
   var hostname = document.location.hostname;
-  if (((hostname == "localhost") || (hostname == "192.168.139.1")) && (getUrlParam_Type(getUrlParam()) != "newpost")) {
+  var type = getUrlParam().type;
+  if (((hostname == "localhost") || (hostname == "192.168.139.1")) && (!type || type != "newpost")) {
     $(".new_post_btn").css('visibility', 'visible');
   } else {
     $(".new_post_btn").css('visibility', 'hidden');
@@ -114,30 +125,28 @@ function analyzeUrlParam() {
   }
 
   try {
-    if (!document.location.search || (document.location.search.length == 0))
+    var params = getUrlParam();
+    if (DEBUG_MODE) console.log(params);
+
+    var type = params.type;
+    switch (type)
+    {
+    case "lists": // Analyzing categories like Articles(homepage), ACM, etc
+      analyzeCategory(params, onfailfallback);
+      break;
+    case "post":
+      analyzePostsParam(params, onfailfallback);
+      break;
+    case "aboutme":
+      loadAboutme(onfailfallback);
+      break;
+    case "newpost":
+      loadNewPost();
+      break;
+    default: // undefined or so
       loadHomepage();
-    else {
-      var params = getUrlParam();
-      if (DEBUG_MODE) console.log(params);
-
-      var type = getUrlParam_Type(params);
-      if (type) {
-        if (DEBUG_MODE) console.log(type);
-        switch (type)
-        {
-        case "posts":
-          analyzePostsParam(params, onfailfallback);
-          break;
-        case "aboutme":
-          loadAboutme(onfailfallback);
-          break;
-        case "newpost":
-          loadNewPost();
-          break;
-        }
-
-      } // params[0].substr(1, 4) == "type"
-    } // has search params
+      break;
+    } // switch page type
   } catch (e) {
     onfailfallback();
   }

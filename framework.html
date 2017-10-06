@@ -5,15 +5,17 @@
 	<link rel="icon" href="./favicon.ico" type="image/x-icon">
 	<link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<link rel="stylesheet" type="text/css" href="./libs/pace.css">
-	<script type="text/javascript" src="./libs/pace.min.js" data-pace-options='{ "restartOnRequestAfter": true }'></script>
-	<link rel="stylesheet" type="text/css" href="./libs/main.css">
-	<link rel="stylesheet" type="text/css" href="./libs/post_container.css">
-	<link rel="stylesheet" type="text/css" href="./libs/menubar.css">
-	<script type="text/javascript" src="./libs/jquery.min.js"></script>
-	<script type="text/javascript" src="./libs/jquery.appear.promoted.js"></script>
-	<script type="text/javascript" src="./libs/athena.js"></script>
-	<script type="text/javascript" src="./libs/blogsloader.js"></script>
+	<link rel="stylesheet" type="text/css" href="./assets/css/pace.css">
+	<script type="text/javascript" src="./assets/libs/pace.min.js" data-pace-options='{ "restartOnRequestAfter": true }'></script>
+	<link rel="stylesheet" type="text/css" href="./assets/css/main.css">
+	<link rel="stylesheet" type="text/css" href="./assets/css/post.css">
+	<link rel="stylesheet" type="text/css" href="./assets/css/post_container.css">
+	<link rel="stylesheet" type="text/css" href="./assets/css/menubar.css">
+	<script type="text/javascript" src="./assets/libs/jquery.min.js"></script>
+	<script type="text/javascript" src="./assets/libs/jquery.appear.promoted.js"></script>
+	<script type="text/javascript" src="./assets/libs/athena.js"></script>
+	<script type="text/javascript" src="./assets/libs/pageloader.js"></script>
+	<script type="text/javascript" src="./assets/libs/blogsloader.js"></script>
 </head>
 <body>
 	<div class="header navbar">
@@ -44,10 +46,10 @@
 			</div>
 			<div class="navlist">
 				<div class="links transit-bkcolor" onclick="onCloseMenu(), onClickBlogsHome()">
-					<span>Donny's Blogs</span>
+					<span>Articles</span>
 				</div>
 				<div class="links transit-bkcolor" onclick="onCloseMenu(), onClickACMHome()">
-					<span>ACM's</span>
+					<span>ACM's Trip</span>
 				</div>
 				<div class="links transit-bkcolor" onclick="onCloseMenu(), onClickAboutme()">
 					<span>About</span>
@@ -77,7 +79,7 @@
 	</div>
 	<div class="operate_bar">
 		<div class="operate_bar_btn new_post_btn" style="visibility:hidden;" onclick="onCreateNewPost()">+</div>
-		<div class="operate_bar_btn scroll_to_top_btn" onclick="onScrollToTop()">&#x25B2;</div>
+		<div class="operate_bar_btn scroll_to_top_btn" onclick="onScrollToTop()"></div>
 	</div>
 </body>
 </html>
