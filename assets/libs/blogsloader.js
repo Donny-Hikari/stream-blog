@@ -128,7 +128,7 @@ function loadpostMain(postinfo) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      if (postinfo.bHTML)
+      if (!postinfo.bXML)
         processpostHTML(postinfo, this.responseText);
       else
         processPostXML(postinfo, this.responseXML);
@@ -147,13 +147,13 @@ function parsePostInfo(rawJSONText, postfolder) {
 
   // type
   if (postinfo.type && /XML/i.test(postinfo.type))
-    postinfo.bHTML = false;
+    postinfo.bXML = true;
   else
-    postinfo.bHTML = true;
+    postinfo.bXML = false;
 
   // main
   if (!postinfo.main)
-    postinfo.main = (postinfo.bHTML) ? "index.html" : "index.xml";
+    postinfo.main = (!postinfo.bXML) ? "index.html" : "index.xml";
 
   return postinfo;
 }
@@ -170,7 +170,7 @@ function loadpost(folder, infofilename) {
     case 200: // Has "postinfo.json" file
       if (!this.responseText) { // Regard as HTML by default
         postinfo.folder = folder;
-        postinfo.bHTML = true;
+        postinfo.bXML = false;
         postinfo.main = "index.html";
         loadpostMain(postinfo);
       } else { // Loading "postinfo.json"
@@ -180,7 +180,7 @@ function loadpost(folder, infofilename) {
       break;
     case 404: // Is xml type
       postinfo.folder = folder;
-      postinfo.bHTML = false;
+      postinfo.bXML = true;
       postinfo.main = "index.xml";
       loadpostMain(postinfo);
       break;
@@ -192,37 +192,48 @@ function loadpost(folder, infofilename) {
 
 // Load post preview for current post
 function loadPostPreview($postPreviewer) {
-  var infourl = $postPreviewer.infoFile;
-  if (DEBUG_MODE) console.log("Loading post preview \"%s\" ...", infourl);
-  $postPreviewer.appear_off($postPreviewer.onappear_callback);
+  var postdetail = $postPreviewer.data('postdetail');
 
-  var postFolder = getFolder(infourl);
-  var $postInfoMask = $postPreviewer.find(".infomask");
+  function presentPostPreview(postinfo) {
+    var urlparam = getUrlParam();
+    var $postInfoMask = $postPreviewer.find(".infomask");
 
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function () {
-    if (this.readyState == 4 && this.status == 200) {
-        var postinfo = parsePostInfo(this.responseText, postFolder);
-        var urlparam = getUrlParam();
+    $postInfoMask.find(".posttitle").text(postinfo.title);
+    $postInfoMask.find(".postdate").text(postinfo.date);
+    $postPreviewer.click(function (){
+      pushHistoryState(
+        "?" +
+        "type=post" +
+        "&category=" + urlparam.category +
+        "&year=" + postdetail.urlparamdata.year +
+        "&article=" + postdetail.urlparamdata.article
+      );
+      loadpostMain(postinfo);
+    });
+    $postPreviewer.css("cursor", "pointer");
+    $postPreviewer.css("background-image", "url(\"" + postinfo.folder + postinfo.poster + "\")");
+  }
 
-        $postInfoMask.find(".posttitle").text(postinfo.title);
-        $postInfoMask.find(".postdate").text(postinfo.date);
-        $postPreviewer.click(function (){
-          pushHistoryState(
-            "?" +
-            "type=post" +
-            "&category=" + urlparam.category +
-            "&year=" + $postPreviewer.urlparamdata.year +
-            "&article=" + $postPreviewer.urlparamdata.article
-          );
-          loadpostMain(postinfo);
-        });
-        $postPreviewer.css("cursor", "pointer");
-        $postPreviewer.css("background-image", "url(\"" + postFolder + postinfo.poster + "\")");
-    }
-  };
-  xhttp.open("GET", infourl, true);
-  xhttp.send();
+  if (postdetail.direct) // Direct method, support HTML post only.
+  {
+    presentPostPreview(postdetail);
+  }
+  else
+  {
+    var infourl = postdetail.infourl;
+    if (DEBUG_MODE) console.log("Loading post preview \"%s\" ...", infourl);
+    $postPreviewer.appear_off($postPreviewer.onappear_callback);
+  
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        var postinfo = parsePostInfo(this.responseText, postdetail.folder);
+        presentPostPreview(postinfo);
+      }
+    };
+    xhttp.open("GET", infourl, true);
+    xhttp.send();
+  }
 }
 
 function isSpecialModeOn() {
@@ -272,12 +283,19 @@ function loadList($yearContainer) {
 
         var $curPreviewer = $postPreviewer.clone();
 
-        // Regist appear callback
-        $curPreviewer.infoFile = listFolder + curPost.infofile;
-        $curPreviewer.urlparamdata = {
+        if (curPost.direct) {
+          curPost.folder = listFolder + curPost.postfolder;
+        }
+        else {
+          curPost.infourl = listFolder + curPost.infofile;
+          curPost.folder = getFolder(curPost.infourl);
+        }
+        curPost.urlparamdata = {
           "year": $yearContainer.year_number,
           "article": (postslist.length - curIndex) + 654415
         };
+        $curPreviewer.data('postdetail', curPost);
+        // Regist appear callback
         $curPreviewer.onappear_callback = function () { loadPostPreview($curPreviewer); };
         $curPreviewer.appear($curPreviewer.onappear_callback);
 

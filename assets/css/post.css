@@ -2,3 +2,43 @@
 .mainbody {
     border-radius: 15px;
 }
+
+.musicbox {
+	margin: 40px auto;
+}
+.musicbox_inner {
+	display: block;
+    text-align: center;
+}
+.musicbox_tag {
+	margin: auto 0;
+    vertical-align: middle;
+    height: 22px;
+    font-size: 40px;
+}
+.musicbox_tag::after {
+	content: ":";
+}
+.musicbox_media {
+	display: block;
+	margin: auto;
+}
+
+/* On big screen */
+@media screen and (min-width: 1000px) {
+	.musicbox {
+		display: table;
+		margin: 20px auto;
+	}
+	.musicbox_inner {
+		display: inline-flex;
+		text-align: center;
+	}
+	.musicbox_tag {
+		margin: auto 0;
+		margin-right: 1em;
+		vertical-align: middle;
+		font-size: 18px;
+		text-align: right;
+	}
+}
