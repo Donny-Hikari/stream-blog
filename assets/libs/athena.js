@@ -24,8 +24,9 @@ function listenPushState() {
   }
 }
 
+/* Parse search param */
 function getUrlParam() {
-  var params = { category: "Articles" };
+  var params = { category: Object.keys(streamblogs.pages.categories)[0] };
   if (!document.location.search) return params;
   document.location.search.split('?').pop().split('&').forEach((val)=>{
     var param = val.split("=");
@@ -35,6 +36,7 @@ function getUrlParam() {
   return params;
 }
 
+/* Parse hash param */
 function getHashParam() {
   var attachments = {};
   if (!document.location.hash) return attachments;
@@ -73,37 +75,15 @@ function onChangeAvatarStyle() {
 }
 
 function onClickHomeBtn () {
-  jumpToHome();
-}
-
-function onClickBlogsHome() {
-  jumpToHome();
-  $(window).scrollTop(0);
-}
-
-function onClickAboutme() {
-  jumpToAboutme();
-}
-
-function onClickACMHome() {
-  jumpToCategory("ACM");
-  $(window).scrollTop(0);
-}
-
-function loadRmService() {
-  $.ajax({
-    url: "./libs/rmservice.js",
-    dataType: "script",
-    success: null
-  });
-}
-
-function onCreateNewPost() {
-  jumpToNewPost();
+  gotoCategory(getUrlParam().category);
 }
 
 function onScrollToTop() {
   $(window).scrollTop(0);
+}
+
+function onCreateNewPost() {
+  gotoNewPost();
 }
 
 function dynamicNewPostBtn() {
@@ -116,12 +96,20 @@ function dynamicNewPostBtn() {
   }
 }
 
+function loadRmService() {
+  $.ajax({
+    url: "./libs/rmservice.js",
+    dataType: "script",
+    success: null
+  });
+}
+
 function analyzeUrlParam() {
 
   // fallback
   function onfailfallback() {
     if (DEBUG_MODE) console.log("Error occured when analyzing url. Load homepage instead.");
-    jumpToHome();
+    gotoHomepage();
   }
 
   try {
@@ -137,19 +125,62 @@ function analyzeUrlParam() {
     case "post":
       analyzePostsParam(params, onfailfallback);
       break;
-    case "aboutme":
-      loadAboutme(onfailfallback);
+    case "links":
+      gotoLink(params.linkname);
       break;
     case "newpost":
-      loadNewPost();
+      gotoNewPost();
       break;
     default: // undefined or so
-      loadHomepage();
+      gotoHomepage();
       break;
     } // switch page type
   } catch (e) {
     onfailfallback();
   }
+
+}
+
+function loadUserConfig() {
+  var user = streamblogs.user;
+  var pages = streamblogs.pages;
+
+  // Set blogs title
+  document.title = streamblogs.blogname;
+  // Set home button
+  $("#homebtn").append($("<span>").text(streamblogs.blogname));
+
+  // Set user profile
+  $("#userprofile-avatar").attr("src", user.avatarurl);
+  $("#userprofile-username").text(user.fullname);
+
+  // Set categories
+  Object.keys(pages.categories).forEach((val) => {
+      var nxtCategory = $("<div>", { class: "links transit-bkcolor" });
+      var categoryName = $("<span>");
+      if (pages.categories_name[val]) categoryName.text(pages.categories_name[val]);
+      else categoryName.text(val);
+      nxtCategory.append(categoryName);
+      nxtCategory.click(() => {
+          onCloseMenu();
+          gotoCategory(val);
+      });
+      $(".navlist").append(nxtCategory);
+  });
+
+  // Set links
+  Object.keys(pages.links).forEach((val) => {
+      var nxtLink = $("<div>", { class: "links transit-bkcolor" });
+      var linkName = $("<span>");
+      if (pages.links_name[val]) linkName.text(pages.links_name[val]);
+      else linkName.text(val);
+      nxtLink.append(linkName);
+      nxtLink.click(() => {
+          onCloseMenu();
+          gotoLink(val);
+      });
+      $(".navlist").append(nxtLink);
+  });
 
 }
 
@@ -163,9 +194,11 @@ $(window).ready(function (){
   window.onpushstate = function (e) {
     dynamicNewPostBtn();
   };
-
+  
   // Initialize for menuPanel
   $("#menuPanel").css("left", "-" + $("#menuPanel").width() + "px");
+
+  loadUserConfig();
 
   dynamicNewPostBtn();
 

@@ -342,7 +342,7 @@ function analyzePostsParam(params, callback) {
   if (DEBUG_MODE) console.log("Loading article [" + params.article + "] in year " + params.year);
 
   // Load mainList
-  var listurl_yearly = categories[params.category];
+  var listurl_yearly = streamblogs.pages.categories[params.category];
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {

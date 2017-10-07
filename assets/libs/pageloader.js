@@ -13,12 +13,6 @@ var DEBUG_MODE = true;
 var DEBUG_VERBOSE = DEBUG_MODE && true;
 
 var blogroot = "./blogs/";
-var categories = {
-  "Articles": blogroot + "list/years.json",
-  "ACM": blogroot + "list/acm.json"
-};
-var aboutmefile = "./about/aboutme.json";
-var newpostfile = "./new_post/editpost.json";
 
 /*
 blogsloader depend on the following variables/function:
@@ -30,6 +24,7 @@ blogsloader depend on the following variables/function:
 */
 
 function pushHistoryState(params) {
+  if (window.location.search == params) return;
   window.history.pushState(null, null, window.location.pathname + params + document.location.hash);
 }
 
@@ -42,11 +37,11 @@ const PageStateEnum = {
 function setPageTitle(title) {
   var postTitle = $("#postTitleContainer");
   if (!title || title == "") {
-    document.title = "Donny's Blogs";
+    document.title = streamblogs.blogname;
     postTitle.text("");
   }
   else {
-    document.title = title + " - Donny's Blogs";
+    document.title = title + " - " + streamblogs.blogname;
     postTitle.text(title);
   }
 }
@@ -58,7 +53,7 @@ function switchPage(page) {
   case PageStateEnum.HOME:
     $("#postContainer").hide();
     setPageTitle(getUrlParam()["category"]);
-    $('#homebtn').find('span').removeClass("home").text("Donny's Blogs");
+    $('#homebtn').find('span').removeClass("home").text(streamblogs.blogname);
     $("#presentList").show();
     $(window).scrollTop(homepageScrollTop);
     break;
@@ -75,49 +70,36 @@ function switchPage(page) {
 var categoryStatus = null;
 
 function gotoCategory(category) {
+  if (DEBUG_MODE) console.log("Loading category " + category + " ...");
+  pushHistoryState("?type=lists&category=" + category);
   switchPage(PageStateEnum.HOME);
   if (categoryStatus == category) return;
   categoryStatus = category;
-  loadCategory(category);
+  loadCategory(streamblogs.pages.categories[category]);
 }
 
-function loadHomepage() {
+function gotoHomepage() {
   if (DEBUG_MODE) console.log("Loading homepage...");
-  gotoCategory(categories["Articles"]);
-}
-
-function jumpToHome() {
   pushHistoryState("");
-  loadHomepage();
+  var categories = streamblogs.pages.categories;
+  gotoCategory(Object.keys(categories)[0]);
 }
 
-function loadAboutme(callback) {
-  loadpost(getFolder(aboutmefile), getFilename(aboutmefile));
+function gotoLink(linkname) {
+  var link = streamblogs.pages.links[linkname];
+  pushHistoryState("?type=links&linkname=" + linkname);
+  loadpost(getFolder(link), getFilename(link));
 }
 
-function jumpToAboutme() {
-  pushHistoryState("?type=aboutme");
-  loadAboutme(jumpToHome);
-}
-
-function loadNewPost(callback) {
-  loadpost(getFolder(newpostfile), getFilename(newpostfile));
-}
-
-function jumpToNewPost() {
+function gotoNewPost(callback) {
+  var newpostfile = streamblogs.pages.newpostfile;
   pushHistoryState("?type=newpost");
-  loadNewPost(jumpToHome);
-}
-
-function jumpToCategory(category) {
-  if (DEBUG_MODE) console.log("Loading category " + category + " ...");
-  pushHistoryState("?type=lists&category=" + category);
-  gotoCategory(categories[category]);
+  loadpost(getFolder(newpostfile), getFilename(newpostfile));
 }
 
 function analyzeCategory(params, callback) {
   var except_wa = "Wrong Arguments.";
 
   if (!params.category) throw except_wa;
-  gotoCategory(categories[params.category]);
+  gotoCategory(params.category);
 }

@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Donny's Blogs</title>
 	<link rel="icon" href="./favicon.ico" type="image/x-icon">
 	<link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -13,6 +12,7 @@
 	<link rel="stylesheet" type="text/css" href="./assets/css/menubar.css">
 	<script type="text/javascript" src="./assets/libs/jquery.min.js"></script>
 	<script type="text/javascript" src="./assets/libs/jquery.appear.promoted.js"></script>
+	<script type="text/javascript" src="./assets/libs/config.js"></script>
 	<script type="text/javascript" src="./assets/libs/athena.js"></script>
 	<script type="text/javascript" src="./assets/libs/pageloader.js"></script>
 	<script type="text/javascript" src="./assets/libs/blogsloader.js"></script>
@@ -26,7 +26,6 @@
 			<span id="postTitleContainer" class="title"></span>
 		</div>
 		<div id="homebtn" class="buttons transit-bkcolor" onclick="onClickHomeBtn()">
-			<span>Donny's Blogs</span>
 		</div>
 	</div>
 	<div class="maincontainer">
@@ -41,19 +40,10 @@
 		</div>
 		<div class="middlepanel">
 			<div id="myprofile" class="profileinfo profile-centerized" onclick="onChangeAvatarStyle()">
-				<img class="prof-avatar" src="./users/avatar.small.png" href="Donny Hikari"></img>
-				<span class="prof-user">Donny Hikari</span>
+				<img id="userprofile-avatar" class="prof-avatar"></img>
+				<span id="userprofile-username" class="prof-user"></span>
 			</div>
 			<div class="navlist">
-				<div class="links transit-bkcolor" onclick="onCloseMenu(), onClickBlogsHome()">
-					<span>Articles</span>
-				</div>
-				<div class="links transit-bkcolor" onclick="onCloseMenu(), onClickACMHome()">
-					<span>ACM's Trip</span>
-				</div>
-				<div class="links transit-bkcolor" onclick="onCloseMenu(), onClickAboutme()">
-					<span>About</span>
-				</div>
 			</div>
 		</div>
 		<div class="infopanel">
