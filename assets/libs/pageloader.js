@@ -9,13 +9,8 @@
 * Version: 0.0.1
 */
 
-var DEBUG_MODE = true;
-var DEBUG_VERBOSE = DEBUG_MODE && true;
-
-var blogroot = "./blogs/";
-
 /*
-blogsloader depend on the following variables/function:
+blogsloader depend on the following variables/function in pageloader:
 + PageStateEnum
 + homepageScrollTop
 - pushHistoryState

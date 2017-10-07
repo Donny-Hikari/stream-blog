@@ -9,9 +9,6 @@
 * Version: 0.4.9
 */
 
-var DEBUG_MODE = true;
-var DEBUG_VERBOSE = DEBUG_MODE && false;
-
 function getFolder(fullpath) {
   var i = fullpath.lastIndexOf('/');
   if (i <= 0)

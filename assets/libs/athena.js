@@ -9,9 +9,6 @@
 * Version: 0.1.9
 */
 
-var DEBUG_MODE = true;
-var DEBUG_VERBOSE = DEBUG_MODE && true;
-
 /* Trigger onpushstate when pushState */
 function listenPushState() {
   var pushState = window.history.pushState;
