@@ -1,0 +1,101 @@
+/*
+* main.css
+* By Donny Hikari
+* 
+* v2017.07.03
+*/
+.mainbody {
+	margin: 0 auto;
+	padding: 40px 5%;
+	position: relative;
+	background-color: white;
+}
+.headline {
+	width: 90%;
+	margin-left: auto;
+	margin-right: auto;
+	font-size: 60px;
+	position: relative;
+	text-align: center;
+}
+.author {
+	font-size: 42px;
+	position: relative;
+	text-align: center;
+}
+.signature {
+	text-align: right;
+	font-size: 35px;
+	line-height: 2.0;
+    font-style: italic;
+}
+.last_edit {
+	text-align: right;
+	font-size: 30px;
+	line-height: 2.0;
+	color: #818181;
+}
+.bodytext {
+	margin: 0 auto;
+	padding: 60px 0 120px;
+	font-size: 40px;
+	position: relative;
+	text-align: left;
+}
+.bodytext p {
+	display: block;
+	min-height: 20px;
+	line-height: 2.0;
+	margin: 5px auto;
+	text-indent:2em;
+}
+.bodytext img {
+    display: block;
+	width: 100%;
+	margin: 10px auto;
+}
+ul.contactlinks {
+	display: inline-block;
+    list-style-type: none;
+    text-align: left;
+}
+li.linkinfo {
+	margin: 0px 20px;
+	padding: 20px 5px;
+	display: inline-block;
+	font-size: 20px;
+    white-space: nowrap;
+}
+
+@media screen and (min-width: 1000px) {
+	.mainbody {
+		width: 70%;
+		padding: 60px 15%;
+	}
+	.headline {
+		font-size: 34px;
+	}
+	.author {
+		font-size: 22px;
+	}
+	.signature {
+		font-size: 20px;
+	}
+	.last_edit {
+		font-size: 17px;
+	}
+	.bodytext {
+		font-size: 23px;
+	}
+	.bodytext p {
+		width: 94%;
+	}
+	.bodytext img {
+	    display: block;
+		width: 100%;
+		margin: 10px auto;
+	}
+	.bodytext img.longImage {
+		width: 60%;
+	}
+}

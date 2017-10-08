@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="./main.css" type="text/css">
+    <script type="text/javascript" src="/stream/libs/jquery.min.js"></script>
+    <script type="text/javascript" src="./edit_post.js"></script>
+</head>
+<body>
+    <div class="post_editor">
+        <textarea id="ta_headline" class="ta_singleline" placeholder="Title"></textarea>
+        <textarea id="ta_author" class="ta_singleline" placeholder="Author">Donny</textarea>
+        <textarea id="ta_createdate" class="ta_singleline" placeholder="Created Date"></textarea>
+        <div id="post_body">
+            <div class="ta_container">
+                <textarea class="ta_body" placeholder="&#x2606;Write freely&#x2606;" onkeyup="textarea_auto_grow(this)" onkeydown="textarea_auto_grow(this)"></textarea>
+            </div>
+        </div>
+        <div class="control_bar">
+        <div class="inner_holder">
+            <div id="btn_post" class="ctrl_btn post_btn">Post</div>
+            <div id="btn_dispose" class="ctrl_btn dispose_btn">Dispose</div>
+        </div>
+        </div>
+    </div>
+    <div class="post_state">
+        <p></p>
+    </div>
+    <div class="tools_bar">
+        <input id="choose_media" class="tools_input" type="file" accept="*" multiple>
+        <label for="choose_media" class="tools_label">+</label>
+        <input id="unlink_media" class="tools_input">
+        <label for="unlink_media" class="tools_label">-</label>
+    </div>
+</body>
+</html>
