@@ -1,3 +1,11 @@
+2017-10-08 Stream Blogs v0.6.4
++ Beautify UI
++ Add background
++ Fix avatar mode switch
++ Make "New Post" smarter
++ Embedded postinfo in lists
++ Add "Category" and "Links"
+
 2017-04-19 Stream Blogs v0.5.8
 + Complete new post function
 
@@ -7,3 +15,6 @@
 + Seperate styles of different modules into different css
 + Some beautify
 + Dynamically load javascripts in posts
+
+2017-01-25 Stream Blogs v0.0.1
+First develop Stream Blogs

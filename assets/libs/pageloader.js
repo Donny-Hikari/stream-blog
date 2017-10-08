@@ -1,12 +1,12 @@
 /*
-* ACMLoader - ACM homepage loader
+* Pageloader - ACM homepage loader
 *
 * Copyright (c) 2017 Donny Hikari
 * licensed under MIT license.
 *
 * https://github.com/Donny-Hikari/stream-blog
 *
-* Version: 0.0.1
+* Version: 0.1.2
 */
 
 /*

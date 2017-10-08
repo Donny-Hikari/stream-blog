@@ -6,7 +6,7 @@
 *
 * https://github.com/Donny-Hikari/stream-blog
 *
-* Version: 0.4.9
+* Version: 0.5.5
 */
 
 function getFolder(fullpath) {
